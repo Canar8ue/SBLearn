@@ -1,0 +1,15 @@
+# Course material — keep local, don't publish
+CORE CASE F26 - IS Career Launchpad_v2.pdf
+
+# Scratch
+case_text.txt
+
+# OS junk
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
