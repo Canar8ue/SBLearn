@@ -287,6 +287,18 @@ is ever accidentally committed, remove it from history AND rotate the key.
   sheet itself (hover/focus shows it before the click resolves), so
   "tap the same word again to dismiss" doesn't — tap anywhere else instead.
 
+### 2026-09-03 — published
+- **GitHub**: everything since v1 committed as `2683a8a` (AI grader, grading
+  proxy, clips+shop, jarin.dev support, mobile edition) and pushed to
+  `main` on Canar8ue/SBLearn. Secret scan before pushing: only
+  `YOUR_ZAI_API_KEY_HERE` placeholders; `ai-key.js` confirmed gitignored.
+- **jarin.dev (production)**: copied `index.html` into `../Jarin.dev/static/
+  projects/career-launchpad/`, scp'd it to the GCloud server, rebuilt the
+  container (`docker compose up -d --build`). Live-verified: the URL serves
+  the new build (HTTP 200, tabbar markup present) and `/api/grade` responds.
+  The Jarin.dev repo now also has the folder committed (`e858859`) so it
+  matches the server; its other in-flight edits were left uncommitted.
+
 ### Next up (waiting on team input)
 - Replace placeholder interview questions with researched real ones (edit the
   `interview` array inside each career in `CAREERS`).
