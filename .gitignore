@@ -4,6 +4,9 @@ CORE CASE F26 - IS Career Launchpad_v2.pdf
 # Scratch
 case_text.txt
 
+# Secrets — local only, never publish (AI grader reads this at runtime)
+career-launchpad/ai-key.js
+
 # OS junk
 Thumbs.db
 .DS_Store

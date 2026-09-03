@@ -8,7 +8,7 @@ how it is designed, and the rules for changing it.
 
 ## 1. What this project is
 
-A **single-file web app** that helps incoming IS students do two things (the exact client
+A **web app** that helps incoming IS students do two things (the exact client
 mandate from the case brief):
 
 1. **Career Path Discovery** — explore 8 IS career tracks and find which one fits them best
@@ -83,6 +83,210 @@ and flashcards) so a freshman learns the vocabulary while they browse.
 - Familiarity levels: 0 NEW · 1 SEEN · 2 LEARNING · 3 KNOW IT (stored in `S.buzz`).
 - Keyboard guards: typing in panel search no longer triggers quiz 1–6 shortcuts.
 
+### 2026-09-02 — Session 4: rule change
+- Removed the self-imposed one-file rule ("app ships as a single `index.html` —
+  vanilla, no build step, no frameworks, no external deps"). The case only requires
+  "an HTML file that can be run on any browser," so a multi-file layout is now
+  allowed if more efficient. No code changes — the app is still one file today; the
+  case constraint (runs on any browser) is recorded in Section 1.
+
+### 2026-09-02 — Session 5: AI grader for mock interviews (Z.ai GLM)
+- **Self-grading is unchanged** (4 rubric ticks per question, X/20). Added an
+  **opt-in second score from an AI grader** on the session summary:
+  - End screen now shows **two panels side by side**: SELF ticks/20 (green) and
+    AI GRADER — GLM (Z.ai) /20 (blue). Button "Grade with AI" → spinner → score.
+  - **AI rubric is deeper than the self-rubric**: 5 weighted dimensions per
+    question — relevance .25, structure .15, specificity .20, depth .25,
+    communication .15 — each 0–4, composite per question to one decimal, session
+    total out of 20 (same scale as self for honest comparison).
+  - Per-question rows show SELF x/4 · AI y/4, the five dimension scores
+    (REL/STR/SPE/DEP/COM), and GLM's one-line BEST + FIX notes. Verdict card at
+    the bottom: two-sentence read + STRONG/MIXED/WEAK stamp (blue) + Re-grade.
+  - AI grade persists to `S.interviews[id].ai` — mocks grid line shows
+    "11/20 SELF · AI 15.7/20".
+- **Provider**: Z.ai **GLM**, `glm-4.5-flash` (free tier — the account key has no
+  paid balance, so glm-4.6 returns "insufficient balance"; model is one constant
+  `AI_CFG.model` to swap if the team recharges). Thinking disabled, JSON response
+  mode, temperature 0.3, one call per session (all 5 answers in the prompt).
+- **API details** (section `8b. AI GRADER` in index.html): POST
+  `https://api.z.ai/api/paas/v4/chat/completions`. CORS verified from the browser
+  for localhost AND `Origin: null` (works even opened as file:// by double-click).
+  75s timeout; any failure renders an inline "AI grader unreachable — self-score
+  stands" card with a Try again button. Never blocks the self-score flow.
+- **Privacy copy updated**: textarea microline now "SAVED ON THIS DEVICE — AI
+  GRADING AT THE END IS OPT-IN"; footer no longer claims "zero data leaves this
+  device"; the Grade button discloses exactly what is sent. Data & Sources page
+  gained an "AI interview grader" card (model, what it sees, when, attribution —
+  per case rules on labeling AI-generated content).
+- Browser-tested end-to-end with the real API: 5-question SWE session with mixed
+  strong/weak answers → AI total 15.7/20, correct differentiation (weak
+  behavioral answer 1.2/4 vs strong technical 3.7–4/4), verdict + stamp +
+  persistence all verified, layout screenshot-checked.
+
+### ⚠ API KEY SECURITY (read before pushing)
+The Z.ai key lives ONLY in `career-launchpad/ai-key.js`, which is **gitignored** —
+nothing committed contains it. Present/demo from `node server.js` so the key
+never touches the browser at all (see Session 7). The key was also pasted in
+team chat once, so **rotate it on z.ai after Sep 4** regardless. If `ai-key.js`
+is ever accidentally committed, remove it from history AND rotate the key.
+
+### 2026-09-02 — Session 6: key moved out of the app file (lazy, closure-held)
+- **`index.html` no longer contains or loads any key on its own.** Removed the
+  static `<script src="ai-key.js">` tag and `AI_CFG.key` entirely.
+- Key now lives only in **gitignored `career-launchpad/ai-key.js`**, which holds
+  the key inside a closure and registers `window.CLP_GRADE(url, body, timeoutMs)`
+  — the fetch-with-auth function. The key string itself is never assigned to any
+  window property, so console/Inspect Element show nothing.
+- **Lazy load**: `ai-key.js` is script-injected only at the moment a user presses
+  "Grade with AI" (`loadGrader()` in section 8b). Before that click the browser
+  has no key, no key script tag, and no reference to either — verified in-browser
+  (typeof CLP_GRADE/CLP_AI_KEY undefined, zero key-string matches on window).
+- Missing `ai-key.js` (e.g., a fresh clone): app fully works; clicking Grade
+  shows "AI grader unreachable — ai-key.js not found next to index.html" and the
+  self-score stands. `ai-key.example.js` (committed) is the copy-me template.
+- Re-tested end-to-end: lazy load → real GLM grade succeeded. Bonus validation:
+  deliberately off-topic test answers scored 0/20 with the verdict "consistently
+  answers different questions than asked" — the grader is strict and correct.
+- **Residual exposure (inherent to any no-server app):** during a live grading
+  call, DevTools → Network shows the Authorization header (that's how HTTP auth
+  works), and after first use the Sources panel lists ai-key.js. A determined
+  user with DevTools open can capture the key; casual Inspect Element cannot.
+  The only complete fix is a tiny server-side proxy (e.g., a free Cloudflare
+  Worker holding the key); not done for the competition — rotate the key after
+  Sep 4 instead.
+
+### 2026-09-02 — Session 7: grading proxy server (key now fully server-side)
+- **New `career-launchpad/server.js`** (committed, zero dependencies, Node 18+):
+  serves the app as static files AND exposes **POST /api/grade** — a proxy that
+  attaches the Z.ai key server-side and forwards to the API. The browser never
+  receives the key in this mode. Also: per-IP rate limit (30 grades / 5 min) so
+  an exposed port can't be used as a free GLM relay; 300KB body cap; 75s
+  upstream timeout; model/thinking/JSON-mode pinned server-side; **ai-key.js is
+  never served** (404).
+- **`ai-key.js` is now dual-mode**: in the browser it seals the key in a closure
+  and registers `window.CLP_GRADE`; in Node it `module.exports` the key for the
+  server. One file, one place to rotate.
+- **Client picks the transport automatically** (`aiCall` in section 8b):
+  1. served over http(s) → try same-origin `/api/grade` first; 404/501 (no
+     proxy on this host) falls through, any other proxy answer is authoritative.
+  2. fallback (file:// or static host) → lazy-inject ai-key.js → direct call.
+- **Verified in-browser, both modes**: server mode graded through the proxy with
+  `CLP_GRADE` still undefined, zero key script tags, and no key string anywhere
+  in the DOM; static mode (python http.server) fell through on 501 and graded
+  via the direct path. Fixed two bugs found by testing: server JSON-stringified
+  static file buffers (page rendered garbage), and 501-from-python breaking the
+  fallthrough.
+- **Run it**: `node career-launchpad/server.js` → http://localhost:8642 (this is
+  now the recommended way — full security). `python -m http.server` and
+  double-click still work; they just use the closure-key fallback path.
+- **Security posture**: in server mode the key exists only on the machine
+  running server.js. In fallback mode (file://) a DevTools user could still
+  catch the auth header during a live call — that's inherent to client-side
+  calls. Demo plan: present from `node server.js`. Rotate the key after Sep 4
+  regardless (it was pasted in team chat once).
+
+### 2026-09-02 — Session 8: progress system, clips currency, cosmetic shop
+- **Progress pill in the app bar (far right)**: `LV n` + mini XP bar + clips
+  count (paperclip icon). Click → progress modal. Updates live on every XP award.
+- **Clips currency**: earned 1:1 with XP at every awardXp call (+ a level-up
+  bonus of `25 × new level`). Existing saves migrate automatically: lifetime XP
+  counts as unspent clips (check the STORED value at migration, not the merged
+  one — first attempt had a bug where the base default `clips:0` defeated the
+  migration check).
+- **Progress modal** (`4c. CLIPS + SHOP + PROGRESS MODAL`; overlay z-400,
+  toasts/confetti raised above it; Escape closes; backdrop click closes):
+  level box (title, XP bar, to-go), wallet box, the 8-level ladder with
+  per-level clip rewards (done/current/locked states), badge grid, field-note
+  stats (streak, dossiers, mocks, terms KNOWN), and the shop.
+- **The shop** (cosmetics only — footer states no scores, no shortcuts):
+  - Lagoon / Ube / Rose accent packs (80 ea) — override the `--blue/-d/-t` trio
+    via `html[data-accent]`; EQUIP toggles back to Launchpad Blue.
+  - **The Shop Cat** (120) — pixel cat perches on the "IS" logo mark (theme-aware
+    fills like Otto).
+  - **Midnight Edition** (200) — full dark theme via `html[data-theme="midnight"]`
+    overriding the neutral tokens. To make this possible, all 22 hardcoded
+    surface whites became a `--card` token, and text-on-ink spots use `--on-ink`
+    (mark, buttons-dark, toasts, nodes, chips). Otto re-drawn with
+    `style="fill:var(--ink/--card)"` so he inverts too.
+  - Otto Extended Vocabulary (60) — 12 new deadpan lines join the pool.
+  - Full-Deck Confetti (40) — 60 squares instead of 30.
+- **Testing note**: GUI-verified: pill render + live update, modal open by real
+  click (layout vision-checked), Escape close, migration fix. The in-app
+  browser's input layer died mid-session (clicks/screenshots stopped
+  dispatching), so buy/equip/toggle/economy/persistence were verified at
+  function level in the live page (all pass: exact spend math, broke-guard,
+  equip cycles, cat mount/unmount, 20-line Otto pool, midnight+lagoon+cat
+  persisted across reload; Midnight + cat also screenshot-verified). Worth a
+  2-minute manual walkthrough before the demo.
+
+### 2026-09-03 — Session 9: live on jarin.dev
+- The Launchpad is now **hosted at https://jarin.dev/static/projects/career-launchpad/index.html**
+  as a project on the team's personal portfolio (Flask site on Google Cloud,
+  source repo `../Jarin.dev/`), and listed on the jarin.dev homepage (card
+  NO. 7, thumbnail = `LogoISCore.png`).
+- **Server-side grading in production**: `POST /api/grade` added to Jarin.dev's
+  `app.py` — Flask proxies to Z.ai with the key read from env `ZAI_API_KEY` or
+  the gitignored `ai_key.txt` (scp'd to the server only). Rate-limited 30/5min
+  per IP; model/JSON-mode/thinking pinned server-side. The browser never sees
+  the key on jarin.dev (verified: no key script, no key in DOM after grading).
+- Jarin.dev deps/infra changed: `requests` added to requirements.txt,
+  `gunicorn --timeout 120` in the Dockerfile (upstream can take ~75s), and
+  urllib3 forced to IPv4 — **api.z.ai's IPv6 stalls Python requests** (curl
+  falls back fine; symptom was a 75s read timeout).
+- Client needed zero changes: the same `/api/grade` absolute-path fetch works
+  on localhost (node server.js), on jarin.dev (Flask), and falls back to the
+  closure-key path when hosted as a plain file.
+- Verified live: homepage card renders, app loads, real grade returned through
+  https://jarin.dev/api/grade, `ai-key.js` 404s on the host.
+- **Demo implication**: the app can be demoed straight off the web — no local
+  server or key file needed — grading runs on jarin.dev's backend.
+
+### 2026-09-03 — Session 10: proper mobile version (Duolingo-style bottom tab bar)
+- **Rule kept: desktop is untouched.** Every mobile change is scoped to
+  `display:none`-by-default elements + one new `@media (max-width:680px)` block
+  (the same breakpoint where the desktop nav already hid). The one JS behavior
+  addition (tap-elsewhere-closes-tooltip) is guarded by
+  `matchMedia("(max-width:680px)")` so desktop clicks behave identically.
+  Verified at 1280×720 after all edits: tabbar `display:none` (zero rect),
+  appnav flex/4 links, bz side-tab block, body padding 0, hero h1 97.28px,
+  toasts bottom 22px — all identical to pre-session values.
+- **Bottom tab bar** (`.tabbar`, z-120, in `<nav id="tabbar">` populated by
+  `renderTabbar()` at boot): 5 items — HOME / FIT FINDER / TRACKS / MOCKS /
+  BUZZWORDS. Icon in a 34px rounded tile + 8.5px mono label; active tab = blue
+  label + `--blue-t` tile (recolored free by accent packs; Midnight gets a
+  `#8ab4f8` label override because `--blue-d` is too dim on the dark bar).
+  Ink top border, `env(safe-area-inset-bottom)` padding, press-scale feedback.
+  Route → active-tab mapping in `markTabbar()` (results lights FIT FINDER;
+  `#/sources` lights nothing). BUZZWORDS toggles the glossary panel and lights
+  while open; an amber count badge (`#tbadge`, updated in `renderBZ`) shows
+  known terms once > 0. New icons: `home`, `chat` (speech bubble + dots).
+- **Phone layout pass (≤680px)**: `body` gets `--tb-clear` padding so content
+  clears the bar; `viewport-fit=cover` added to the meta tag; `.bz-tab` edge
+  tab hidden (BUZZWORDS lives in the bar now); buzzwords panel becomes a
+  full-width z-150 drawer; buzzword tooltips become **fixed bottom sheets**
+  above the bar (tap word → sheet, tap elsewhere → closes + blurs the term —
+  iOS keeps `:focus` otherwise); toasts raised (96px + safe-area) and full
+  width; 16px fonts on the mock textarea + panel search (stops iOS focus
+  zoom); hero headline clamps to 40–56px with stacked CTA; quiz/mock Continue
+  & rubric buttons go full-width; dossier header buttons split 50/50 and the
+  5-tab row scrolls horizontally; results action buttons stack; dossier cards,
+  shop, footer drop to one column; progress modal tightens. Footer + all pages
+  verified to clear the bar at full scroll (17px gap).
+- **Browser-tested on a 390×844 viewport, end to end**: tab bar render + all
+  active states (incl. `#/track/*` → TRACKS, `#/results` → FIT FINDER), real
+  taps through quiz → results, dossier, buzzwords drawer (104 rows, badge 7
+  after promoting terms), flashcards button, tooltip sheet open/close, mock
+  interview answer → review → end (stacked score panels, AI CTA), toast
+  clearance, progress modal open/close, Midnight + Lagoon on the tab bar,
+  no horizontal overflow anywhere. Screenshots vision-checked at every step.
+  Two IAB quirks handled: the input layer died once (fixed by a fresh tab —
+  same Session 8 failure mode), and `getComputedStyle` misreports the
+  Midnight tab color while the rendered pixels are correct (verified by
+  screenshot: #8ab4f8).
+- Known behavior note: tapping an orange term can land on the just-opened
+  sheet itself (hover/focus shows it before the click resolves), so
+  "tap the same word again to dismiss" doesn't — tap anywhere else instead.
+
 ### Next up (waiting on team input)
 - Replace placeholder interview questions with researched real ones (edit the
   `interview` array inside each career in `CAREERS`).
@@ -136,16 +340,24 @@ no purple/blue hero washes, no glassmorphism, no emoji, no "Empower your journey
   Results: the top-match card. Everything else recedes (grey, smaller, lower contrast)
   and gains contrast on hover.
 - Max width 1180px, generous whitespace, left-aligned compositions.
-- Sticky appbar: brand left, nav right, nothing else.
+- Sticky appbar: brand left, nav center-right, **progress pill far right**
+  (LV + XP mini-bar + clips — the one chrome element besides nav).
 - Sticky right rail (home) for progress cards; sticky rail top offset 78px.
+- Shop cosmetics: accent packs + Midnight theme override the `--blue` trio /
+  neutral tokens via `html[data-accent]` / `html[data-theme]`; surface whites
+  use `--card`, text-on-ink uses `--on-ink`. Otto and the shop cat use
+  `var(--ink)`/`var(--card)` fills so they invert in Midnight.
 
 ### Components (reuse, don't invent)
 Buttons: Google pills — primary (blue filled), dark (ink), green (continue/success),
 ghost (outlined white), `btn-sm`/`btn-hero` sizes. Chips: outlined pills. Tabs: pill
 group, active = blue tint fill. Toasts: dark snackbar bottom-left, `+XP` tag in amber.
-Confetti: 30 flat squares in the 5 Google colors (never on reduced-motion). Tooltips:
-hard-shadowed white cards with ink border + arrow. Icons: single inline-SVG set
-(24px viewBox, stroke 1.8, round caps, `overflow:visible`).
+Confetti: 30 flat squares in the 5 Google colors (60 with the Full-Deck shop item;
+never on reduced-motion). Tooltips: hard-shadowed white cards with ink border + arrow.
+Icons: single inline-SVG set (24px viewBox, stroke 1.8, round caps, `overflow:visible`).
+**Progress modal**: dimmed overlay + hard card (z-400) — level/wallet boxes, dotted
+ladder rows, badge grid, stat chips, 3-col shop cards with swatches and BUY/EQUIP/ON
+buttons. **Progress pill**: quiet bordered pill in the appbar (bar hidden <680px).
 
 ### Accessibility
 Visible focus rings (2px blue, offset 2). All interactive elements reachable by
@@ -165,11 +377,17 @@ ISCore1/                                    # repo root
 ├── CORE CASE F26 - IS Career Launchpad_v2.pdf   # Case brief (LOCAL ONLY)
 ├── case_text.txt                           # Scratch dump of PDF (ignored)
 └── career-launchpad/
-    └── index.html                          # The entire app, one file
+    ├── index.html                          # The entire app
+    ├── server.js                           # Static server + /api/grade grading proxy (key stays server-side)
+    ├── ai-key.js                           # LOCAL ONLY (gitignored): Z.ai key — closure for browser, export for server
+    └── ai-key.example.js                   # Template to create ai-key.js (committed)
 ```
 
-Everything lives in `career-launchpad/index.html` (~143KB). Open it directly
-(double-click) or serve the folder (`python -m http.server 8642` → http://localhost:8642).
+Everything lives in `career-launchpad/`. **Recommended:** `node server.js` in that
+folder → http://localhost:8642 (serves the app + the key-safe grading proxy).
+Alternatives: `python -m http.server 8642` or double-clicking `index.html` — both
+work, but grading then uses the browser-side key fallback (see Session 7). The
+Z.ai API allows CORS from localhost and from `Origin: null` (file://).
 
 ### Map of index.html (in-file landmarks)
 | Section | What's there |
@@ -181,7 +399,9 @@ Everything lives in `career-launchpad/index.html` (~143KB). Open it directly
 | `3. ICONS` | Inline SVG set |
 | `4. STATE + GAMIFICATION` | localStorage load/save, XP, badges, streak, toasts, confetti |
 | `4b. BUZZWORDS` | Annotator, tooltips, panel, flashcards |
+| `4c. CLIPS + SHOP` | Clips economy, SHOP items, cosmetics application (accent/theme/cat), progress pill + modal |
 | `5.–8.` | Helpers, appbar, quiz logic, interview session |
+| `8b. AI GRADER` | `AI_CFG` (endpoint/model), 5-dim weighted rubric, GLM prompt, lazy `loadGrader()` → gitignored `ai-key.js` registers closure-held `CLP_GRADE`, parse + normalize, error handling |
 | `9. VIEWS` | One render function per route (hash SPA) |
 | `10. ROUTER` | `render()` on hashchange + keyboard handlers |
 
@@ -191,9 +411,14 @@ Everything lives in `career-launchpad/index.html` (~143KB). Open it directly
 
 - **Hash-routed SPA**: `#/` home · `#/quiz` · `#/results` · `#/tracks` · `#/track/<id>` ·
   `#/mocks` · `#/mock/<id>` · `#/sources`. Route → render → `annotate()` pass for buzzwords.
-- **State** lives in module vars (`S`, `Q`, `RUN`, `BZ`) and persists to
+- **State** lives in module vars (`S`, `Q`, `RUN`, `BZ`, `AI_RUN`) and persists to
   `localStorage["clp_state_v1"]`: `{xp, streak, lastDay, read[], quizDone, quizTop,
-  quizScores, interviews{}, badges[], buzz{}}`. Quiz/interview sessions are in-memory only.
+  quizScores, interviews{}, badges[], buzz{}, clips, owned[], cosmetics{accent,
+  theme, cat, confetti, vocab2}}`. `interviews[id]` = `{done, ticks,
+  ai?{total, perQ[], signal, verdict, model}}`. Quiz/interview sessions (and the
+  in-flight AI grade) are in-memory only.
+- **Clips**: 1 per XP at award time, +25×level on level-up, spent in the shop.
+  Saves from before the shop migrate: lifetime XP = starting clips.
 - **Content edits go in data, not views.** Careers, quiz questions, glossary terms are
   plain arrays/objects at the top of the script — swap or extend without touching view code.
 - **Scoring**: quiz answers accumulate a trait vector → normalized → cosine similarity
@@ -212,28 +437,30 @@ Everything lives in `career-launchpad/index.html` (~143KB). Open it directly
 
 ## 6. Rules
 
-1. **One file.** The app ships as a single `index.html` — vanilla HTML/CSS/JS, no build
-   step, no frameworks, no external deps except Google Fonts (must degrade offline).
-2. **No gradients. Ever.** Flat colors only. No glassmorphism, no emoji, no purple-blue
+1. **No gradients. Ever.** Flat colors only. No glassmorphism, no emoji, no purple-blue
    AI-slop aesthetics, no marketing filler copy. If it looks like a template, redo it.
-3. **One focal point per screen.** New elements must recede or earn attention; when in
+2. **One focal point per screen.** New elements must recede or earn attention; when in
    doubt, remove things.
-4. **Data over views.** All career/quiz/glossary content lives in the data arrays at the
+3. **Data over views.** All career/quiz/glossary content lives in the data arrays at the
    top of the script. View code never hardcodes content.
-5. **Every number needs a source.** Anything statistical goes on the Data & Sources page
+4. **Every number needs a source.** Anything statistical goes on the Data & Sources page
    with provenance. Salary ranges stay labeled "directional" until verified.
-6. **No trackers, no accounts, no network calls.** Progress stays in localStorage on the
-   user's device.
-7. **Test after every change.** Open the file in a browser and walk the changed flow
+5. **No trackers, no accounts, one opt-in network call.** The only external request
+   the app ever makes is the AI grader — via our own `/api/grade` proxy when served
+   by `node server.js` (key stays server-side), or straight to Z.ai in the
+   file:// fallback. Everything else stays in localStorage on the user's device.
+6. **Test after every change.** Open the file in a browser and walk the changed flow
    before committing. Run the syntax check (`node -e "new Function(...script...)"`) after
    JS edits.
-8. **Respect the case rules**: don't submit a slide deck instead of the tool; attribute
+7. **Respect the case rules**: don't submit a slide deck instead of the tool; attribute
    AI-generated content; no proprietary/paid data sources. Team must be able to explain
    every component in the video.
-9. **Never commit secrets.** No tokens, passwords, or API keys in any file. The case PDF
-   stays local (course material — don't publish it).
-10. **Update this file** (`progress.md`) at the end of every working session: log what
-    changed, what broke, what's next.
+8. **Never commit secrets.** No tokens, passwords, or API keys in any committed
+   file. The Z.ai GLM key lives only in gitignored `career-launchpad/ai-key.js`
+   (see the security note above and Session 6). The case PDF stays local
+   (course material — don't publish it).
+9. **Update this file** (`progress.md`) at the end of every working session: log what
+   changed, what broke, what's next.
 
 ---
 

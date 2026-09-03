@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>IS Career Launchpad — find your track</title>
 <meta name="description" content="An interactive field guide to Information Systems careers: find the track that fits, then rehearse the interview.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23202124'/%3E%3Ctext x='32' y='42' font-family='Arial Black,Arial' font-size='26' font-weight='900' fill='%23fff' text-anchor='middle'%3EIS%3C/text%3E%3C/svg%3E">
@@ -22,7 +22,7 @@
   --line2:#e8eaed;
   --surface:#f8f9fa;    /* Google grey 50 */
   --surface2:#f1f3f4;
-  --white:#fff;
+  --white:#fff; --card:#fff; --on-ink:#fff;
   --blue:#1a73e8; --blue-d:#174ea6; --blue-t:#e8f0fe;
   --green:#188038; --green-b:#1e8e3e; --green-t:#e6f4ea;
   --red:#d93025;   --red-t:#fce8e6;
@@ -70,7 +70,7 @@ button{font-family:var(--font-ui)}
 .brand{display:flex; align-items:center; gap:10px; cursor:pointer; user-select:none}
 .brand:hover{text-decoration:none}
 .brand .mark{
-  width:34px; height:34px; background:var(--ink); color:#fff; border-radius:8px;
+  width:34px; height:34px; background:var(--ink); color:var(--on-ink); border-radius:8px;
   display:grid; place-items:center; font:900 13px var(--font-disp); letter-spacing:.02em;
 }
 .brand .word{font:800 17px var(--font-disp); color:var(--ink); letter-spacing:-.01em}
@@ -84,13 +84,42 @@ button{font-family:var(--font-ui)}
 .appbar .spacer{flex:1}
 .chip{
   display:inline-flex; align-items:center; gap:6px; padding:5px 12px;
-  border:1px solid var(--line); border-radius:999px; background:#fff;
+  border:1px solid var(--line); border-radius:999px; background:var(--card);
   font:700 12px var(--font-mono); color:var(--ink2); white-space:nowrap;
 }
 .chip svg{width:14px; height:14px}
 .chip.streak{color:var(--yellow-d); border-color:#f5c85c}
 .chip.xp{color:var(--green)}
 .chip.lvl{color:var(--blue-d)}
+
+/* ---------- mobile tab bar (Duolingo-style; display:none ≥681px, flex ≤680px) ---------- */
+.tabbar{
+  display:none; position:fixed; left:0; right:0; bottom:0; z-index:120;
+  background:var(--card); border-top:1.5px solid var(--ink);
+  box-shadow:0 -3px 12px rgba(60,64,67,.08);
+  padding:7px 6px calc(7px + env(safe-area-inset-bottom)); gap:2px;
+}
+.tb{
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+  min-height:52px; padding:4px 2px; border-radius:12px; border:none; background:none;
+  color:var(--grey); text-decoration:none; cursor:pointer; user-select:none;
+  -webkit-tap-highlight-color:transparent; transition:transform .12s, color .15s;
+}
+.tb:hover{text-decoration:none}
+.tb:active{transform:scale(.94)}
+.tb .ti{
+  position:relative; width:34px; height:30px; display:grid; place-items:center;
+  border-radius:9px; overflow:visible; transition:background .15s;
+}
+.tb .ti svg{width:23px; height:23px}
+.tb .tl{font:700 8.5px var(--font-mono); letter-spacing:.09em; text-transform:uppercase; white-space:nowrap}
+.tb.on{color:var(--blue-d)}
+.tb.on .ti{background:var(--blue-t); color:var(--blue)}
+.tbadge{
+  position:absolute; top:-5px; right:-10px; min-width:17px; height:15px; padding:0 4px;
+  background:var(--yellow); color:#202124; font:700 8.5px/15px var(--font-mono);
+  border-radius:999px; text-align:center; border:1.5px solid var(--card);
+}
 
 /* ---------- buttons ---------- */
 .btn{
@@ -101,20 +130,20 @@ button{font-family:var(--font-ui)}
 .btn:hover{box-shadow:var(--shadow); text-decoration:none; transform:translateY(-1px)}
 .btn:active{transform:translateY(0)}
 .btn-primary{background:var(--blue); color:#fff}
-.btn-dark{background:var(--ink); color:#fff}
+.btn-dark{background:var(--ink); color:var(--on-ink)}
 .btn-green{background:var(--green); color:#fff}
-.btn-ghost{background:#fff; color:var(--blue-d); border:1px solid var(--line)}
+.btn-ghost{background:var(--card); color:var(--blue-d); border:1px solid var(--line)}
 .btn-sm{padding:7px 14px; font-size:13px}
 .btn[disabled], .btn[aria-disabled="true"]{background:var(--line2); color:#9aa0a6; cursor:not-allowed; box-shadow:none; transform:none}
 .btn svg{width:16px; height:16px}
 
 /* ---------- cards ---------- */
 .card{
-  background:#fff; border:1px solid var(--line); border-radius:16px; padding:22px;
+  background:var(--card); border:1px solid var(--line); border-radius:16px; padding:22px;
 }
 .card.tight{padding:16px}
 .hard{
-  background:#fff; border:1.5px solid var(--ink); border-radius:12px;
+  background:var(--card); border:1.5px solid var(--ink); border-radius:12px;
   box-shadow:4px 4px 0 var(--ink); transition:transform .15s, box-shadow .15s;
 }
 .hard:hover{transform:translate(-2px,-2px); box-shadow:6px 6px 0 var(--ink)}
@@ -124,7 +153,7 @@ button{font-family:var(--font-ui)}
 .stamp{
   display:inline-block; padding:5px 10px; border:2px solid var(--red); color:var(--red);
   font:700 10.5px var(--font-mono); letter-spacing:.12em; text-transform:uppercase;
-  transform:rotate(-3deg); border-radius:4px; background:#fff; white-space:nowrap;
+  transform:rotate(-3deg); border-radius:4px; background:var(--card); white-space:nowrap;
 }
 .stamp.blue{border-color:var(--blue); color:var(--blue-d); transform:rotate(2deg)}
 .stamp.green{border-color:var(--green); color:var(--green)}
@@ -188,12 +217,12 @@ button{font-family:var(--font-ui)}
 .stage:last-child{padding-bottom:4px}
 .stage .rail{display:flex; flex-direction:column; align-items:center; gap:6px}
 .node{
-  width:44px; height:44px; border-radius:999px; border:2px solid var(--ink); background:#fff;
+  width:44px; height:44px; border-radius:999px; border:2px solid var(--ink); background:var(--card);
   display:grid; place-items:center; font:800 15px var(--font-disp); color:var(--ink);
   flex:none; z-index:1;
 }
 .node.done{background:var(--green); border-color:var(--green); color:#fff}
-.node.now{background:var(--ink); color:#fff}
+.node.now{background:var(--ink); color:var(--on-ink)}
 .rail .cord{width:2px; flex:1; min-height:26px; background:var(--ink); opacity:.25}
 .stage .body{flex:1; padding-top:2px}
 .stage h3{font-size:21px; font-weight:800; text-transform:uppercase; letter-spacing:.01em}
@@ -207,7 +236,7 @@ button{font-family:var(--font-ui)}
 .badge-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:12px}
 .badge{
   text-align:center; padding:10px 4px; border:1px solid var(--line); border-radius:12px;
-  background:#fff; position:relative;
+  background:var(--card); position:relative;
 }
 .badge svg{width:22px; height:22px; color:var(--yellow-d)}
 .badge .bn{font:700 8.5px var(--font-mono); letter-spacing:.04em; text-transform:uppercase; display:block; margin-top:5px; color:var(--ink2)}
@@ -220,11 +249,11 @@ button{font-family:var(--font-ui)}
 }
 .group-head .gname{font:800 13px var(--font-mono); letter-spacing:.16em; text-transform:uppercase; color:var(--ink2)}
 .group-head .grule{flex:1; border-top:1px solid var(--ink)}
-.group-head .gn{font:700 11px var(--font-mono); color:#fff; background:var(--ink); padding:2px 8px; border-radius:4px}
+.group-head .gn{font:700 11px var(--font-mono); color:var(--on-ink); background:var(--ink); padding:2px 8px; border-radius:4px}
 .track-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:18px}
 .tcard{
   display:flex; flex-direction:column; cursor:pointer; padding:0; overflow:hidden;
-  background:#fff;
+  background:var(--card);
 }
 .tcard .bar{height:5px; width:100%}
 .tcard .inner{padding:16px 16px 14px; display:flex; flex-direction:column; flex:1}
@@ -259,7 +288,7 @@ button{font-family:var(--font-ui)}
 .tabs{display:flex; gap:8px; flex-wrap:wrap; border-bottom:1px solid var(--line); padding-bottom:14px; margin-bottom:22px}
 .tab{
   font:500 13px var(--font-ui); padding:8px 16px; border-radius:999px; cursor:pointer;
-  border:1px solid var(--line); background:#fff; color:var(--ink2);
+  border:1px solid var(--line); background:var(--card); color:var(--ink2);
 }
 .tab.on{background:var(--blue-t); color:var(--blue-d); border-color:#c2d9f8; font-weight:700}
 .tab:hover{border-color:#9aa0a6}
@@ -301,7 +330,7 @@ button{font-family:var(--font-ui)}
 }
 .quiz-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:12px}
 .qdots{display:flex; gap:6px}
-.qdot{width:22px; height:6px; border:1px solid var(--ink); background:#fff; border-radius:2px}
+.qdot{width:22px; height:6px; border:1px solid var(--ink); background:var(--card); border-radius:2px}
 .qdot.done{background:var(--green); border-color:var(--green)}
 .qdot.cur{background:var(--ink)}
 .quiz-card{padding:30px 32px; margin-top:14px}
@@ -309,7 +338,7 @@ button{font-family:var(--font-ui)}
 .opts{display:flex; flex-direction:column; gap:11px}
 .opt{
   display:flex; gap:13px; align-items:flex-start; text-align:left; width:100%;
-  border:1.5px solid var(--line); border-radius:12px; background:#fff; cursor:pointer;
+  border:1.5px solid var(--line); border-radius:12px; background:var(--card); cursor:pointer;
   padding:14px 16px; font:500 14.5px/1.5 var(--font-ui); color:var(--ink2);
   transition:border-color .12s, box-shadow .12s, transform .12s;
 }
@@ -350,7 +379,7 @@ button{font-family:var(--font-ui)}
 .mkcard h3{font-size:15.5px; font-weight:800; margin:0 0 6px}
 .mkcard .meta{font:500 10.5px var(--font-mono); color:var(--grey); letter-spacing:.07em; text-transform:uppercase; margin-top:auto; padding-top:12px}
 .run-wrap{max-width:780px; margin:0 auto; padding:22px 0 90px}
-.run-bar{height:12px; border:1.5px solid var(--ink); border-radius:99px; overflow:hidden; background:#fff; margin:10px 0 6px}
+.run-bar{height:12px; border:1.5px solid var(--ink); border-radius:99px; overflow:hidden; background:var(--card); margin:10px 0 6px}
 .run-bar .fill{height:100%; background:var(--green-b); transition:width .4s}
 .run-meta{display:flex; justify-content:space-between; font:700 10.5px var(--font-mono); letter-spacing:.1em; text-transform:uppercase; color:var(--grey)}
 .qcard{margin-top:18px}
@@ -373,7 +402,7 @@ details.acc .acc-body{padding:0 16px 14px; font-size:13.5px; color:var(--ink2)}
 details.acc .acc-body li{margin:4px 0}
 textarea.ans{
   width:100%; min-height:150px; resize:vertical; border:1.5px solid var(--line); border-radius:12px;
-  padding:14px 16px; font:400 14.5px/1.6 var(--font-ui); color:var(--ink); background:#fff;
+  padding:14px 16px; font:400 14.5px/1.6 var(--font-ui); color:var(--ink); background:var(--card);
 }
 textarea.ans:focus{outline:2px solid var(--blue); outline-offset:1px; border-color:var(--blue)}
 .ans-meta{display:flex; justify-content:space-between; font:500 11px var(--font-mono); color:var(--grey); margin-top:6px}
@@ -386,7 +415,7 @@ textarea.ans:focus{outline:2px solid var(--blue); outline-offset:1px; border-col
 .rubric .rh{font:700 11px var(--font-mono); letter-spacing:.12em; text-transform:uppercase; color:var(--grey); margin-bottom:8px}
 .rubric .ritem{
   display:flex; gap:11px; align-items:flex-start; padding:9px 12px; border:1px solid var(--line);
-  border-radius:10px; margin-bottom:8px; cursor:pointer; background:#fff; font-size:14px; color:var(--ink2);
+  border-radius:10px; margin-bottom:8px; cursor:pointer; background:var(--card); font-size:14px; color:var(--ink2);
   position:relative; user-select:none;
 }
 .rubric .ritem.on{border-color:var(--green); background:var(--green-t); color:var(--ink)}
@@ -402,6 +431,127 @@ textarea.ans:focus{outline:2px solid var(--blue); outline-offset:1px; border-col
 .end-quotes li:last-child{border:none}
 .end-quotes .sc{font:700 12px var(--font-mono); color:var(--green); flex:none; width:44px}
 
+/* ---------- AI grader (session summary) ---------- */
+.ai-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:18px 0 8px; text-align:center}
+.ai-panel{border:1.5px solid var(--line); border-radius:12px; padding:18px 14px 14px; background:var(--card)}
+.ai-panel .lbl{font:700 10.5px var(--font-mono); letter-spacing:.14em; text-transform:uppercase; color:var(--grey); margin-bottom:8px}
+.ai-panel .val{font:700 38px/1 var(--font-mono); color:var(--green)}
+.ai-panel .val .of{font-size:.45em; color:var(--grey); font-weight:700}
+.ai-panel .sub{font:500 10px var(--font-mono); letter-spacing:.08em; text-transform:uppercase; color:var(--grey); margin-top:8px}
+.ai-panel.glm{border-color:var(--blue); background:var(--blue-t)}
+.ai-panel.glm .val{color:var(--blue-d)}
+.ai-cta{display:flex; flex-direction:column; align-items:center; gap:10px; padding:4px 0 2px}
+.ai-note{font:500 10px/1.7 var(--font-mono); letter-spacing:.06em; text-transform:uppercase; color:var(--grey); max-width:36ch}
+.ai-err{font:500 11.5px/1.6 var(--font-ui); color:var(--red)}
+.ai-attr{font:700 9.5px var(--font-mono); letter-spacing:.12em; text-transform:uppercase; color:var(--grey)}
+.spin{display:inline-block; width:13px; height:13px; border:2px solid rgba(255,255,255,.4); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; vertical-align:-2px; margin-right:7px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ai-verdict{border:1.5px solid var(--ink); border-radius:12px; background:var(--blue-t); padding:14px 18px; text-align:left; box-shadow:4px 4px 0 var(--ink); margin-top:18px}
+.ai-verdict .vh{display:flex; justify-content:space-between; align-items:center; gap:10px; font:700 10.5px var(--font-mono); letter-spacing:.14em; text-transform:uppercase; color:var(--blue-d); margin-bottom:6px}
+.ai-verdict p{margin:0; font-size:13.5px; line-height:1.6; color:var(--ink2)}
+.ai-q{list-style:none; padding:0; margin:16px 0 0; text-align:left}
+.ai-q li{padding:10px 0; border-bottom:1px dotted var(--line)}
+.ai-q li:last-child{border:none}
+.ai-q .sc{font:700 12px var(--font-mono)}
+.ai-q .s-self{color:var(--green)}
+.ai-q .s-ai{color:var(--blue-d)}
+.ai-q .qq{font-size:13.5px; font-weight:600; color:var(--ink); margin:5px 0 0}
+.ai-q .dims{font:500 10px var(--font-mono); letter-spacing:.06em; color:#9aa0a6; margin-top:5px}
+.ai-q .note{font-size:12.5px; color:var(--grey); margin-top:4px}
+.ai-q .note b{font:700 9.5px var(--font-mono); letter-spacing:.12em; color:var(--ink2); margin-right:7px}
+@media (max-width:640px){ .ai-grid{grid-template-columns:1fr} }
+
+/* ---------- shop cosmetics: accent packs + midnight (applied via <html data-*> attrs) ---------- */
+html[data-accent="lagoon"]{ --blue:#00796b; --blue-d:#004d40; --blue-t:#e0f2f1 }
+html[data-accent="ube"]{ --blue:#7627bb; --blue-d:#53177e; --blue-t:#f3e8fd }
+html[data-accent="rose"]{ --blue:#c2185b; --blue-d:#880e4f; --blue-t:#fce4ec }
+html[data-theme="midnight"]{
+  --ink:#e8eaed; --ink2:#c3c7cb; --grey:#9aa0a6;
+  --line:#3c4043; --line2:#2d2e31;
+  --surface:#1d1e21; --surface2:#26272b; --white:#16171a; --card:#232428; --on-ink:#16171a;
+  --shadow:0 1px 2px rgba(0,0,0,.6), 0 1px 3px 1px rgba(0,0,0,.45);
+}
+html[data-theme="midnight"] .appbar{ background:rgba(22,23,26,.97); border-bottom-color:var(--line) }
+html[data-theme="midnight"] .btn-ghost{ color:var(--ink) }
+html[data-theme="midnight"] .tb.on{ color:#8ab4f8 }   /* --blue-d is too dim on the dark bar */
+
+/* ---------- progress pill (app bar, right) ---------- */
+.xppill{
+  display:flex; align-items:center; gap:10px; border:1.5px solid var(--line); background:var(--card);
+  border-radius:999px; padding:6px 12px 6px 13px; cursor:pointer; flex:none;
+  transition:border-color .15s, box-shadow .15s;
+}
+.xppill:hover{ border-color:var(--ink); box-shadow:var(--shadow) }
+.xppill .lv{ font:700 11px var(--font-mono); color:var(--blue-d); letter-spacing:.05em; white-space:nowrap }
+.xppill .bar{ width:58px; height:7px; border:1px solid var(--ink); border-radius:99px; overflow:hidden; background:var(--card) }
+.xppill .bar i{ display:block; height:100%; background:var(--blue); transition:width .35s }
+.xppill .clips{ font:700 11px var(--font-mono); color:var(--yellow-d); display:flex; align-items:center; gap:5px; white-space:nowrap }
+.xppill .clips svg{ width:13px; height:13px }
+
+/* ---------- progress modal ---------- */
+#pm-ov{ position:fixed; inset:0; background:rgba(32,33,36,.55); z-index:400; display:flex; align-items:center; justify-content:center; padding:18px; animation:pin .18s ease-out }
+@keyframes pin{from{opacity:0} to{opacity:1}}
+#pm{
+  background:var(--card); border:1.5px solid var(--ink); border-radius:16px; box-shadow:6px 6px 0 var(--ink);
+  width:min(840px, 94vw); max-height:88vh; overflow-y:auto; padding:26px 28px 24px; position:relative;
+}
+.pm-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:6px }
+.pm-head h2{ font-size:30px; text-transform:uppercase; letter-spacing:-.01em; margin-top:10px }
+.pm-x{
+  width:34px; height:34px; border:1.5px solid var(--line); background:var(--card); border-radius:999px;
+  cursor:pointer; display:grid; place-items:center; color:var(--ink); flex:none;
+}
+.pm-x:hover{ border-color:var(--ink) }
+.pm-x svg{ width:15px; height:15px }
+.pm-top{ display:grid; grid-template-columns:1.5fr 1fr; gap:14px; margin:16px 0 4px }
+.pm-box{ border:1.5px solid var(--ink); border-radius:12px; padding:16px 18px; background:var(--card); box-shadow:4px 4px 0 var(--ink) }
+.pm-box .big{ font:700 30px/1.1 var(--font-disp); text-transform:uppercase; letter-spacing:-.01em; margin:8px 0 10px }
+.pm-box .bar{ height:12px; border:1.5px solid var(--ink); border-radius:99px; overflow:hidden; background:var(--card) }
+.pm-box .bar i{ display:block; height:100%; background:var(--blue); transition:width .4s }
+.pm-box .meta{ font:500 10.5px var(--font-mono); color:var(--grey); letter-spacing:.08em; text-transform:uppercase; margin-top:8px }
+.pm-wallet{ display:flex; align-items:center; gap:14px }
+.pm-wallet svg{ width:34px; height:34px; color:var(--yellow-d); flex:none }
+.pm-wallet .n{ font:700 34px/1 var(--font-mono); color:var(--yellow-d) }
+.pm-sec{ margin-top:22px }
+.pm-sec > .kicker{ margin-bottom:12px }
+.lad{ list-style:none; margin:0; padding:0 }
+.lad li{
+  display:grid; grid-template-columns:44px 1fr auto auto; gap:12px; align-items:center;
+  padding:9px 12px; border-bottom:1px dotted var(--line); font-size:13.5px;
+}
+.lad li:last-child{ border:none }
+.lad .lv{ font:700 12px var(--font-mono); color:var(--grey) }
+.lad .ti{ font-weight:800; text-transform:uppercase; letter-spacing:.02em; font-family:var(--font-disp) }
+.lad .xp{ font:500 10.5px var(--font-mono); color:var(--grey); letter-spacing:.06em; text-transform:uppercase }
+.lad .rw{ font:700 10.5px var(--font-mono); color:var(--yellow-d); letter-spacing:.06em; text-transform:uppercase; white-space:nowrap }
+.lad li.done .lv, .lad li.done .ti{ color:var(--green) }
+.lad li.now{ background:var(--blue-t); border-bottom-color:transparent; border-radius:8px }
+.lad li.now .lv, .lad li.now .ti{ color:var(--blue-d) }
+.lad li.locked{ opacity:.45 }
+.pm-stats{ display:flex; gap:10px; flex-wrap:wrap }
+.pm-stat{ border:1px solid var(--line); border-radius:10px; padding:10px 16px; background:var(--card) }
+.pm-stat b{ display:block; font:700 20px var(--font-mono) }
+.pm-stat span{ font:500 9.5px var(--font-mono); color:var(--grey); letter-spacing:.1em; text-transform:uppercase }
+
+/* ---------- shop ---------- */
+.shop-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px }
+.shop-item{ border:1.5px solid var(--line); border-radius:12px; padding:14px; background:var(--card); display:flex; flex-direction:column; gap:8px }
+.shop-item.owned{ border-color:var(--ink) }
+.shop-item .si-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:8px }
+.shop-item h4{ font:800 15px var(--font-disp); text-transform:uppercase; letter-spacing:.01em; margin:0 }
+.shop-item .sw{ width:22px; height:22px; border-radius:6px; border:1.5px solid var(--ink); flex:none }
+.shop-item .sd{ font-size:12.5px; color:var(--grey); line-height:1.5; flex:1 }
+.shop-item .si-foot{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:2px }
+.shop-item .pr{ font:700 12px var(--font-mono); color:var(--yellow-d); display:flex; align-items:center; gap:5px; white-space:nowrap }
+.shop-item .pr svg{ width:13px; height:13px }
+.shop-item .pr.broke{ color:var(--red) }
+.shop-item .tag{ font:700 9px var(--font-mono); letter-spacing:.1em; text-transform:uppercase; color:var(--green) }
+.pm-foot{ font:500 10.5px/1.7 var(--font-mono); color:var(--grey); letter-spacing:.05em; text-transform:uppercase; margin-top:20px }
+
+/* ---------- the shop cat (perches on the logo when purchased) ---------- */
+.brand{ position:relative }
+.brand .cat{ position:absolute; left:-7px; top:-13px; width:26px; height:26px; pointer-events:none }
+
 /* ---------- sources ---------- */
 .src-list{list-style:none; margin:0; padding:0}
 .src-list li{padding:14px 0; border-bottom:1px dotted var(--line)}
@@ -409,16 +559,16 @@ textarea.ans:focus{outline:2px solid var(--blue); outline-offset:1px; border-col
 .src-list .sd{font-size:13px; color:var(--grey); margin-top:3px}
 
 /* ---------- toasts / confetti / modal ---------- */
-#toasts{position:fixed; bottom:22px; left:22px; z-index:200; display:flex; flex-direction:column; gap:9px}
+#toasts{position:fixed; bottom:22px; left:22px; z-index:520; display:flex; flex-direction:column; gap:9px}
 .toast{
-  background:var(--ink); color:#fff; border-radius:10px; padding:12px 18px;
+  background:var(--ink); color:var(--on-ink); border-radius:10px; padding:12px 18px;
   font:500 13px var(--font-ui); box-shadow:0 4px 14px rgba(0,0,0,.3);
   display:flex; align-items:center; gap:10px; animation:tin .25s ease-out; max-width:340px;
 }
 .toast .tx{font:700 12px var(--font-mono); color:var(--yellow)}
 @keyframes tin{from{transform:translateY(14px); opacity:0} to{transform:none; opacity:1}}
 .toast.out{transition:opacity .3s, transform .3s; opacity:0; transform:translateY(8px)}
-#confetti{position:fixed; inset:0; pointer-events:none; z-index:300; overflow:hidden}
+#confetti{position:fixed; inset:0; pointer-events:none; z-index:510; overflow:hidden}
 #confetti span{position:absolute; width:9px; height:13px; top:-20px; animation:fall 1.6s ease-in forwards}
 @keyframes fall{to{transform:translateY(105vh) rotate(720deg); opacity:.9}}
 
@@ -444,7 +594,7 @@ footer .fbot{
 .bz:hover, .bz:focus-visible{background:rgba(232,113,10,.10)}
 .bz-tip{
   display:none; position:absolute; z-index:130; left:50%; bottom:calc(100% + 11px);
-  transform:translateX(-50%); width:min(300px, 78vw); padding:12px 14px; background:#fff;
+  transform:translateX(-50%); width:min(300px, 78vw); padding:12px 14px; background:var(--card);
   border:1.5px solid var(--ink); border-radius:10px; box-shadow:4px 4px 0 var(--ink);
   font:400 12px/1.55 var(--font-ui); color:var(--ink2); text-align:left; text-transform:none; letter-spacing:normal;
 }
@@ -473,7 +623,7 @@ footer .fbot{
 .bz-tab .n{color:var(--yellow)}
 .bz-panel{
   position:fixed; top:0; right:0; bottom:0; z-index:110; width:min(400px,94vw);
-  background:#fff; border-left:1.5px solid var(--ink); box-shadow:-8px 0 26px rgba(0,0,0,.14);
+  background:var(--card); border-left:1.5px solid var(--ink); box-shadow:-8px 0 26px rgba(0,0,0,.14);
   transform:translateX(105%); transition:transform .28s ease; display:flex; flex-direction:column;
 }
 .bz-panel.open{transform:none}
@@ -481,26 +631,26 @@ footer .fbot{
 .bz-head .trow{display:flex; justify-content:space-between; align-items:center; gap:10px}
 .bz-head h3{font-size:20px; font-weight:800; text-transform:uppercase; letter-spacing:.01em}
 .bz-x{
-  width:32px; height:32px; border:1.5px solid var(--line); border-radius:999px; background:#fff;
+  width:32px; height:32px; border:1.5px solid var(--line); border-radius:999px; background:var(--card);
   display:grid; place-items:center; cursor:pointer; color:var(--grey);
 }
 .bz-x:hover{border-color:var(--ink); color:var(--ink)}
 .bz-x svg{width:15px; height:15px}
-.bz-bar{display:flex; height:10px; border:1px solid var(--ink); border-radius:99px; overflow:hidden; margin:12px 0 6px; background:#fff}
+.bz-bar{display:flex; height:10px; border:1px solid var(--ink); border-radius:99px; overflow:hidden; margin:12px 0 6px; background:var(--card)}
 .bz-bar span{height:100%}
 .bz-sum{font:700 9.5px var(--font-mono); letter-spacing:.1em; color:var(--grey); text-transform:uppercase}
 .bz-controls{padding:12px 20px 0}
 .bz-search{
   width:100%; padding:10px 16px; border:1.5px solid var(--line); border-radius:999px;
-  font:500 13px var(--font-ui); color:var(--ink); background:#fff;
+  font:500 13px var(--font-ui); color:var(--ink); background:var(--card);
 }
 .bz-search:focus{outline:2px solid var(--blue); outline-offset:1px; border-color:var(--blue)}
 .bz-filters{display:flex; gap:6px; margin-top:10px; flex-wrap:wrap}
 .bz-fchip{
   font:700 10px var(--font-mono); letter-spacing:.08em; padding:5px 11px; border-radius:999px;
-  border:1px solid var(--line); background:#fff; color:var(--grey); cursor:pointer; text-transform:uppercase;
+  border:1px solid var(--line); background:var(--card); color:var(--grey); cursor:pointer; text-transform:uppercase;
 }
-.bz-fchip.on{border-color:var(--ink); background:var(--ink); color:#fff}
+.bz-fchip.on{border-color:var(--ink); background:var(--ink); color:var(--on-ink)}
 .bz-body{flex:1; overflow-y:auto; padding:6px 20px 14px}
 .bz-row{border-bottom:1px dotted var(--line); padding:10px 0}
 .bz-row:last-child{border-bottom:none}
@@ -512,7 +662,7 @@ footer .fbot{
   border-radius:4px; letter-spacing:.08em; flex:none;
 }
 .bz-dots{display:inline-flex; gap:3px; flex:none}
-.bz-dots i{width:8px; height:8px; border:1px solid #9aa0a6; border-radius:2px; background:#fff}
+.bz-dots i{width:8px; height:8px; border:1px solid #9aa0a6; border-radius:2px; background:var(--card)}
 .bz-dots i.f1{background:var(--yellow); border-color:var(--yellow-d)}
 .bz-dots i.f2{background:var(--blue); border-color:var(--blue)}
 .bz-dots i.f3{background:var(--green); border-color:var(--green)}
@@ -546,14 +696,76 @@ footer .fbot{
   .railcol{position:static; flex-direction:row; flex-wrap:wrap}
   .railcol>*{flex:1 1 260px}
 }
+@media (max-width:860px){
+  .pm-top{grid-template-columns:1fr}
+  .shop-grid{grid-template-columns:repeat(2,1fr)}
+}
 @media (max-width:680px){
   .appnav{display:none}
+  .xppill .bar{display:none}
+  .shop-grid{grid-template-columns:1fr}
+  .lad li{grid-template-columns:38px 1fr auto}
+  .lad .rw{display:none}
   .track-grid,.mock-grid{grid-template-columns:1fr}
   .mrow{grid-template-columns:140px 1fr 48px}
   .mrow .ml span.tname{font-size:11px}
   .traj .trow{grid-template-columns:70px 1fr; }
   .traj .trow .tval{grid-column:2}
   .det-head .head-cta{margin-left:0}
+}
+
+/* ============================================================
+   MOBILE LAYOUT (≤680px) — phone pass built around the tab bar.
+   Everything here is phone-only; ≥681px is untouched.
+   ============================================================ */
+@media (max-width:680px){
+  body{ --tb-clear:calc(84px + env(safe-area-inset-bottom)); padding-bottom:var(--tb-clear) }
+  .tabbar{display:flex}
+  .bz-tab{display:none}          /* buzzwords moved into the tab bar */
+  #toasts{left:12px; right:12px; bottom:calc(96px + env(safe-area-inset-bottom))}
+  .toast{max-width:none}
+  .bz-panel{width:100%; z-index:150}   /* full-screen drawer over the tab bar */
+  .bz-tip{position:fixed; left:12px; right:12px; bottom:var(--tb-clear); top:auto; transform:none; width:auto}
+  .bz-tip::after{display:none}
+  .wrap{padding:0 16px}
+  .appbar .row{gap:10px}
+  .brand .word em{display:none}
+  .xppill{padding:9px 13px}
+  textarea.ans, .bz-search{font-size:16px}   /* 16px stops iOS focus-zoom */
+  .hero h1{font-size:clamp(40px,10.5vw,56px)}
+  .hero h1 .outl{-webkit-text-stroke:1.8px var(--ink); text-stroke:1.8px var(--ink)}
+  .hero .sub{font-size:16px; margin-bottom:26px}
+  .hero .cta{flex-direction:column; align-items:stretch; gap:12px}
+  .hero .cta .btn-hero{width:100%; justify-content:center}
+  .hero .alt{text-align:center}
+  .hero-side{flex-direction:column; align-items:flex-start; gap:12px}
+  .otto-duo{margin-top:14px}
+  .otto-duo .otto{width:60px}
+  .microline{gap:10px 16px; margin-top:32px}
+  .card{padding:18px 16px}
+  .quiz-wrap{min-height:calc(100vh - 150px)}
+  .quiz-wrap{min-height:calc(100dvh - 150px)}
+  .quiz-card{padding:22px 18px}
+  .quiz-foot, .readbtn-row{flex-direction:column; align-items:stretch}
+  .quiz-foot .btn, .readbtn-row .btn{justify-content:center}
+  .quiz-foot .hint{text-align:center}
+  .det-head{gap:14px; padding:24px 0 16px}
+  .det-head .big-ic{width:58px; height:58px; border-radius:14px}
+  .det-head .big-ic svg{width:30px; height:30px}
+  .det-head .head-cta{flex-direction:row; width:100%; align-items:stretch}
+  .det-head .head-cta .btn{flex:1; justify-content:center; font-size:13px}
+  .tabs{overflow-x:auto; flex-wrap:nowrap; scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex:none; white-space:nowrap}
+  .match-hero{padding:24px 18px}
+  .match-hero .pct{font-size:64px}
+  .match-hero .btn{flex:1 1 100%; justify-content:center}
+  .run-wrap{padding:18px 0 30px}
+  footer{margin-top:48px}
+  footer .fgrid{grid-template-columns:1fr; gap:22px; padding:26px 0}
+  #pm{padding:20px 16px 18px}
+  .pm-head h2{font-size:24px}
+  .section{padding:40px 0 8px}
 }
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.01ms !important; transition-duration:.01ms !important}
@@ -581,10 +793,18 @@ footer .fbot{
       <a href="#/sources" data-nav="sources">Data &amp; Sources</a>
     </nav>
     <div class="spacer"></div>
+    <button class="xppill" id="xppill" onclick="openProgress()" aria-label="Your progress, rewards and shop">
+      <span class="lv">LV 1</span>
+      <span class="bar"><i style="width:0%"></i></span>
+      <span class="clips" id="pillclips">0</span>
+    </button>
   </div>
 </header>
 
 <main id="app"></main>
+
+<!-- mobile bottom tab bar — populated by renderTabbar(); display:none on ≥681px -->
+<nav class="tabbar" id="tabbar" aria-label="Sections"></nav>
 
 <footer>
   <div class="wrap">
@@ -593,7 +813,8 @@ footer .fbot{
         <div class="fh">IS Career Launchpad</div>
         <p style="font-size:13px; color:var(--ink2); max-width:44ch; margin:0">
           Built by IS juniors for IS juniors. Eight career tracks indexed, forty interview
-          questions rehearsed, zero data leaves this device. Progress saves to your browser.
+          questions rehearsed, an optional AI grader — everything else stays on this device.
+          Progress saves to your browser.
         </p>
       </div>
       <div>
@@ -1323,7 +1544,9 @@ const ICONS = {
   x:     I('<path d="M5 5l14 14M19 5 5 19"/>'),
   down:  I('<path d="M6 9l6 6 6-6"/>'),
   rocket:I('<path d="M12 15c-2 0-5-1-5-1s-4-5-4-9c4 0 9 4 9 4s1 3 1 5v1z"/><path d="M9 14c-3 1-5 4-5 7 3 0 6-2 7-5"/><circle cx="14.5" cy="9.5" r="1.5"/>'),
-  lib:   I('<path d="M3 3h5v18H3zM10 3h5v18h-5zM17 3l4 1-4 17-4-1"/>')
+  lib:   I('<path d="M3 3h5v18H3zM10 3h5v18h-5zM17 3l4 1-4 17-4-1"/>'),
+  home:  I('<path d="M3 11.5 12 3l9 8.5"/><path d="M5.5 10.5V21h13V10.5"/><path d="M10 21v-6h4v6"/>'),
+  chat:  I('<path d="M21 4H3v13h5v4l6-4h7z"/><circle cx="8" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="10.5" r="1" fill="currentColor" stroke="none"/>')
 };
 
 /* ============================================================
@@ -1335,12 +1558,20 @@ const LEVEL_TITLES = ["Undeclared","Declared","Course-Loaded","Applicant","Inter
 let S = load();
 
 function load(){
-  const base = { xp:0, streak:1, lastDay:today(), read:[], quizDone:false, quizTop:null, quizScores:null, interviews:{}, badges:[], buzz:{} };
+  const base = { xp:0, streak:1, lastDay:today(), read:[], quizDone:false, quizTop:null, quizScores:null, interviews:{}, badges:[], buzz:{}, clips:0, owned:[], cosmetics:{accent:"standard", theme:"paper", cat:false, confetti:false, vocab2:false} };
+  let raw = null;
   try{
-    const raw = localStorage.getItem(STORE_KEY);
-    if(raw) return { ...base, ...JSON.parse(raw) };
-  }catch(e){}
-  return base;
+    const text = localStorage.getItem(STORE_KEY);
+    if(text) raw = JSON.parse(text);
+  }catch(e){ raw = null; }
+  const s = { ...base, ...(raw||{}) };
+  /* shop-era migration: a save from before clips existed earns them retroactively —
+     lifetime XP counts as unspent clips (check the STORED value, after the base merge
+     clips is always present) */
+  if(!raw || !Number.isFinite(raw.clips)) s.clips = s.xp;
+  if(!Array.isArray(s.owned)) s.owned = [];
+  s.cosmetics = { ...base.cosmetics, ...(s.cosmetics||{}) };
+  return s;
 }
 function save(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){} }
 function today(){ return new Date().toISOString().slice(0,10); }
@@ -1376,10 +1607,16 @@ function xpIntoLevel(){ return S.xp % 100; }
 function awardXp(amount, reason){
   const before = level();
   S.xp += amount;
-  save();
-  toast(`+${amount} XP`, reason);
+  S.clips += amount;
+  let bonus = 0;
   if(level() > before){
-    setTimeout(()=>toast("LEVEL UP", `Level ${level()} — ${levelTitle()}`), 700);
+    bonus = level() * 25;
+    S.clips += bonus;
+  }
+  save();
+  toast(`+${amount} XP`, `${reason} · +${amount} clips`);
+  if(bonus){
+    setTimeout(()=>toast("LEVEL UP", `Level ${level()} — ${levelTitle()} · +${bonus} clips`), 700);
   }
   checkBadges();
   renderChips();
@@ -1407,7 +1644,8 @@ function confetti(){
   if(window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   const box = document.getElementById("confetti");
   const colors = ["#1a73e8","#d93025","#f9ab00","#188038","#7627bb"];
-  for(let i=0;i<30;i++){
+  const count = S.cosmetics.confetti ? 60 : 30;
+  for(let i=0;i<count;i++){
     const s = document.createElement("span");
     s.style.left = Math.random()*100 + "vw";
     s.style.background = colors[i%colors.length];
@@ -1420,11 +1658,209 @@ function confetti(){
 }
 
 function resetDemo(){
-  if(confirm("Reset all progress on this device? XP, streak, badges, and read-history go back to zero.")){
+  if(confirm("Reset all progress on this device? XP, clips, streak, badges, shop items, and read-history go back to zero.")){
     localStorage.removeItem(STORE_KEY);
     location.hash = "#/";
     location.reload();
   }
+}
+
+/* ============================================================
+   4c. CLIPS + SHOP + PROGRESS MODAL
+   Clips are earned 1:1 with XP (plus a bonus at every level-up)
+   and spent in the shop on cosmetics. Nothing in the shop
+   affects scores — it is all paint and pets.
+   ============================================================ */
+const CLIP_ICON = I('<path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>');
+
+const SHOP = [
+  {id:"lagoon",   kind:"accent", swatch:"#00796b", price:80,  name:"Lagoon Accent",
+   desc:"Every primary action turns lagoon teal. Calm, cold, committed."},
+  {id:"ube",      kind:"accent", swatch:"#7627bb", price:80,  name:"Ube Accent",
+   desc:"Primary actions in ube purple. For candidates who color outside the grid."},
+  {id:"rose",     kind:"accent", swatch:"#c2185b", price:80,  name:"Rose Accent",
+   desc:"Primary actions in stamp rose. The form letter's favorite color."},
+  {id:"cat",      kind:"toggle", price:120, name:"The Shop Cat",
+   desc:"A small cat perches on the logo. She does nothing. She is perfect. She is forever."},
+  {id:"midnight", kind:"theme",  swatch:"#202124", price:200, name:"Midnight Edition",
+   desc:"The whole launchpad, printed in reverse — ink becomes paper, paper becomes ink."},
+  {id:"vocab2",   kind:"toggle", price:60,  name:"Otto Extended Vocabulary",
+   desc:"Twelve new deadpan Otto lines. He remains unmoved by your progress."},
+  {id:"confetti", kind:"toggle", price:40,  name:"Full-Deck Confetti",
+   desc:"Double the squares at every celebration. Still flat. Still square. Still brief."}
+];
+
+const CAT_SVG = `<svg class="cat" viewBox="0 0 16 16" aria-hidden="true">
+  <g style="fill:var(--ink)">
+    <rect x="3.2" y="2.2" width="2.6" height="3.6"/>
+    <rect x="10.2" y="2.2" width="2.6" height="3.6"/>
+    <rect x="2" y="4.8" width="12" height="8.8" rx="1.4"/>
+    <rect x="14" y="8.8" width="2" height="4.8" rx="0.8"/>
+  </g>
+  <rect x="4.6" y="7.6" width="1.8" height="2.1" style="fill:var(--card)"/>
+  <rect x="9.6" y="7.6" width="1.8" height="2.1" style="fill:var(--card)"/>
+  <rect x="7.3" y="10.4" width="1.4" height="1" style="fill:var(--card)"/>
+</svg>`;
+
+function shopItem(id){ return SHOP.find(s=>s.id===id); }
+function owns(id){ return S.owned.includes(id); }
+
+function applyCosmetics(){
+  const h = document.documentElement;
+  if(S.cosmetics.accent && S.cosmetics.accent !== "standard") h.setAttribute("data-accent", S.cosmetics.accent);
+  else h.removeAttribute("data-accent");
+  if(S.cosmetics.theme === "midnight") h.setAttribute("data-theme", "midnight");
+  else h.removeAttribute("data-theme");
+  mountCat();
+}
+function mountCat(){
+  const brand = document.querySelector(".brand");
+  if(!brand) return;
+  const has = brand.querySelector(".cat");
+  if(S.cosmetics.cat && !has) brand.insertAdjacentHTML("beforeend", CAT_SVG);
+  if(!S.cosmetics.cat && has) has.remove();
+}
+
+function buyItem(id){
+  const it = shopItem(id);
+  if(!it || owns(id) || S.clips < it.price) return;
+  S.clips -= it.price;
+  S.owned.push(id);
+  if(it.kind === "accent") S.cosmetics.accent = id;
+  if(it.kind === "theme")  S.cosmetics.theme = id;
+  if(it.kind === "toggle") S.cosmetics[it.id] = true;
+  save(); applyCosmetics(); renderChips(); renderPModal();
+  toast("PURCHASED", `${it.name} — on`);
+}
+function equipItem(id){
+  const it = shopItem(id);
+  if(!it || !owns(id)) return;
+  if(it.kind === "accent") S.cosmetics.accent = (S.cosmetics.accent === id ? "standard" : id);
+  if(it.kind === "theme")  S.cosmetics.theme  = (S.cosmetics.theme === id ? "paper" : id);
+  save(); applyCosmetics(); renderPModal();
+}
+function toggleCosmetic(id){
+  S.cosmetics[id] = !S.cosmetics[id];
+  save(); applyCosmetics(); renderPModal();
+  toast(S.cosmetics[id] ? "EQUIPPED" : "STOWED", shopItem(id).name);
+}
+
+function openProgress(){
+  closeProgress();
+  const ov = document.createElement("div");
+  ov.id = "pm-ov";
+  ov.addEventListener("click", e=>{ if(e.target === ov) closeProgress(); });
+  ov.innerHTML = `<div id="pm" role="dialog" aria-modal="true" aria-label="Your progress, rewards and shop">${pModalHtml()}</div>`;
+  document.body.appendChild(ov);
+  const x = document.getElementById("pm-x");
+  if(x) x.focus();
+}
+function closeProgress(){
+  const ov = document.getElementById("pm-ov");
+  if(ov) ov.remove();
+}
+function renderPModal(){
+  const ov = document.getElementById("pm-ov");
+  if(ov) ov.querySelector("#pm").innerHTML = pModalHtml();
+}
+
+function pModalHtml(){
+  const lv = level(), maxed = lv >= LEVEL_TITLES.length;
+  const toGo = Math.max(0, lv*100 - S.xp);
+  const known = Object.values(S.buzz).filter(v=>v>=3).length;
+
+  const ladder = LEVEL_TITLES.map((t,i)=>{
+    const n = i+1, need = (n-1)*100;
+    const cls = S.xp < need ? "locked" : (n===lv ? "now" : "done");
+    return `<li class="${cls}">
+      <span class="lv">LV ${n}</span><span class="ti">${t}</span>
+      <span class="xp">${need===0 ? "START" : "AT "+need+" XP"}</span>
+      <span class="rw">+${n*25} CLIPS</span>
+    </li>`;
+  }).join("");
+
+  const badges = BADGES.map(b=>{
+    const got = S.badges.includes(b.id);
+    return `<div class="badge ${got?"":"locked"}" title="${esc(b.desc)}">${ICONS[b.icon]}<span class="bn">${esc(b.name)}</span></div>`;
+  }).join("");
+
+  const shop = SHOP.map(it=>{
+    const owned = owns(it.id);
+    const afford = S.clips >= it.price;
+    let action;
+    if(owned && it.kind==="accent")
+      action = `<button class="btn btn-sm ${S.cosmetics.accent===it.id?"btn-dark":"btn-ghost"}" onclick="equipItem('${it.id}')">${S.cosmetics.accent===it.id?"ACTIVE":"EQUIP"}</button>`;
+    else if(owned && it.kind==="theme")
+      action = `<button class="btn btn-sm ${S.cosmetics.theme===it.id?"btn-dark":"btn-ghost"}" onclick="equipItem('${it.id}')">${S.cosmetics.theme===it.id?"ACTIVE":"EQUIP"}</button>`;
+    else if(owned)
+      action = `<button class="btn btn-sm ${S.cosmetics[it.id]?"btn-green":"btn-ghost"}" onclick="toggleCosmetic('${it.id}')">${S.cosmetics[it.id]?"ON":"OFF"}</button>`;
+    else if(afford)
+      action = `<button class="btn btn-primary btn-sm" onclick="buyItem('${it.id}')">BUY</button>`;
+    else
+      action = `<button class="btn btn-sm" disabled title="Need ${it.price - S.clips} more clips">BUY</button>`;
+    return `<div class="shop-item ${owned?"owned":""}">
+      <div class="si-top"><h4>${esc(it.name)}</h4>${it.swatch?`<span class="sw" style="background:${it.swatch}"></span>`:""}</div>
+      <div class="sd">${esc(it.desc)}</div>
+      <div class="si-foot">
+        <span class="pr ${owned||afford?"":"broke"}">${CLIP_ICON}${owned?"OWNED":it.price}</span>
+        ${action}
+      </div>
+    </div>`;
+  }).join("");
+
+  return `
+  <div class="pm-head">
+    <div>
+      <span class="stamp blue">PROGRESS FILE</span>
+      <h2>Your progress</h2>
+    </div>
+    <button class="pm-x" id="pm-x" onclick="closeProgress()" aria-label="Close">${I('<path d="M18 6 6 18M6 6l12 12"/>')}</button>
+  </div>
+
+  <div class="pm-top">
+    <div class="pm-box">
+      <div class="kicker">LEVEL ${lv} OF ${LEVEL_TITLES.length}</div>
+      <div class="big">${esc(levelTitle())}</div>
+      <div class="bar"><i style="width:${maxed?100:xpIntoLevel()}%"></i></div>
+      <div class="meta">${maxed ? "MAXED · 700+ XP · THE WHOLE LADDER" : `${xpIntoLevel()}/100 XP · ${toGo} XP TO ${esc(LEVEL_TITLES[lv])}`}</div>
+    </div>
+    <div class="pm-box pm-wallet">
+      ${CLIP_ICON}
+      <div>
+        <div class="n">${S.clips}</div>
+        <div class="meta">CLIPS · 1 PER XP + LEVEL BONUS</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pm-sec">
+    <div class="kicker">The ladder — rewards along the way</div>
+    <ul class="lad">${ladder}</ul>
+  </div>
+
+  <div class="pm-sec">
+    <div class="kicker">Badges — ${S.badges.length}/${BADGES.length} earned</div>
+    <div class="badge-grid">${badges}</div>
+  </div>
+
+  <div class="pm-sec">
+    <div class="kicker">Field notes</div>
+    <div class="pm-stats">
+      <div class="pm-stat"><b>${S.streak}</b><span>DAY STREAK</span></div>
+      <div class="pm-stat"><b>${S.read.length}/8</b><span>DOSSIERS READ</span></div>
+      <div class="pm-stat"><b>${Object.keys(S.interviews).length}/8</b><span>MOCKS DONE</span></div>
+      <div class="pm-stat"><b>${known}</b><span>TERMS KNOW IT</span></div>
+    </div>
+  </div>
+
+  <div class="pm-sec">
+    <div class="kicker">The shop — clips in, cosmetics out · balance ${S.clips}</div>
+    <div class="shop-grid">${shop}</div>
+    <p class="pm-foot">
+      EVERYTHING HERE IS COSMETIC — NO SCORES, NO SHORTCUTS /// CLIPS EARN 1:1 WITH XP ///
+      CLICK EQUIP AGAIN TO RETURN TO LAUNCHPAD BLUE
+    </p>
+  </div>`;
 }
 
 /* ============================================================
@@ -1524,6 +1960,17 @@ document.addEventListener("click", e=>{
   b.classList.toggle("open");
 });
 
+/* touch (≤680px): the tooltip is a fixed bottom sheet — tapping anywhere else closes it.
+   Guarded by matchMedia so desktop click behavior is completely unchanged. */
+document.addEventListener("click", e=>{
+  if(!window.matchMedia("(max-width:680px)").matches) return;
+  if(e.target.closest && e.target.closest(".bz")) return;
+  document.querySelectorAll(".bz.open").forEach(x=>x.classList.remove("open"));
+  /* iOS keeps :focus (and thus the sheet) on the term after tapping blank space — blur it */
+  const a = document.activeElement;
+  if(a && a.classList && a.classList.contains("bz")) a.blur();
+});
+
 /* ---------- panel state + rendering ---------- */
 let BZ = { open:false, q:"", filter:"ALL", exp:new Set(), mode:"list", deck:null };
 
@@ -1544,6 +1991,10 @@ function renderBZ(){
   const known = c[1]+c[2]+c[3];
   tab.innerHTML = `BUZZWORDS <span class="n">${known}</span>/${GLOSSARY.length}`;
   tab.style.display = BZ.open ? "none" : "";
+  /* mobile: live count badge on the BUZZWORDS tab in the bottom bar */
+  const tbadge = document.getElementById("tbadge");
+  if(tbadge){ tbadge.textContent = known; tbadge.style.display = known ? "" : "none"; }
+  markTabbar();
   panel.classList.toggle("open", BZ.open);
   if(!BZ.open){ panel.innerHTML = ""; return; }
 
@@ -1715,26 +2166,44 @@ const OTTO_LINES = [
   "Salary data is directional. Negotiation is personal.",
   "Eight tracks. You only need one to fit."
 ];
-function ottoLine(){ return OTTO_LINES[Math.floor(Math.random()*OTTO_LINES.length)]; }
+/* shop unlock: Otto Extended Vocabulary */
+const OTTO_LINES_2 = [
+  "The shop cat outranks me. I accept this.",
+  "Clips are not redeemable for tuition. I checked.",
+  "Level eight is called Launched. Bring a jacket.",
+  "Midnight edition. Same briefcase, darker briefcase.",
+  "Your future employer is currently in a meeting.",
+  "I have seen your quiz answers. No comment.",
+  "Streaks are just habits wearing suits.",
+  "Somewhere a recruiter just updated a spreadsheet.",
+  "The flashcards are not going to flip themselves.",
+  "Confetti is biodegradable here. Probably.",
+  "A read dossier is a dossier that fears you.",
+  "I am filled with XP. It is fine."
+];
+function ottoLine(){
+  const pool = OTTO_LINES.concat(S.cosmetics.vocab2 ? OTTO_LINES_2 : []);
+  return pool[Math.floor(Math.random()*pool.length)];
+}
 
 function ottoSVG(){
   return `<svg class="otto" viewBox="0 0 16 16" aria-hidden="true">
-    <g fill="#202124">
+    <g style="fill:var(--ink)">
       <rect x="5" y="1" width="6" height="1.4"/>
       <rect x="5" y="1" width="1.2" height="2.2"/>
       <rect x="9.8" y="1" width="1.2" height="2.2"/>
       <rect x="2" y="3.4" width="12" height="10" rx="1"/>
-      <rect x="7.2" y="5.2" width="1.6" height="2.4" fill="#fff"/>
+      <rect x="7.2" y="5.2" width="1.6" height="2.4" style="fill:var(--card)"/>
       <g class="eye" style="transform-origin:8px 6.4px">
-        <rect x="4.6" y="5.6" width="1.8" height="1.6" fill="#fff"/>
-        <rect x="9.6" y="5.6" width="1.8" height="1.6" fill="#fff"/>
+        <rect x="4.6" y="5.6" width="1.8" height="1.6" style="fill:var(--card)"/>
+        <rect x="9.6" y="5.6" width="1.8" height="1.6" style="fill:var(--card)"/>
       </g>
-      <rect x="5.2" y="9.6" width="5.6" height="0.9" fill="#fff" rx="0.4"/>
+      <rect x="5.2" y="9.6" width="5.6" height="0.9" style="fill:var(--card)" rx="0.4"/>
       <rect x="0" y="5.2" width="1.6" height="5.6"/>
       <rect x="14.4" y="5.2" width="1.6" height="5.6"/>
     </g>
-    <rect x="6.6" y="5.9" width="0.7" height="0.7" fill="#202124"/>
-    <rect x="11.6" y="5.9" width="0.7" height="0.7" fill="#202124"/>
+    <rect x="6.6" y="5.9" width="0.7" height="0.7" style="fill:var(--ink)"/>
+    <rect x="11.6" y="5.9" width="0.7" height="0.7" style="fill:var(--ink)"/>
   </svg>`;
 }
 
@@ -1743,12 +2212,19 @@ function ottoSVG(){
    ============================================================ */
 function renderChips(){
   const el = document.getElementById("homestats");
-  if(!el) return;
-  el.innerHTML = `
-    <span class="chip streak" title="Days in a row you've shown up">${ICONS.flame} ${S.streak}</span>
-    <span class="chip xp" title="Experience points">${ICONS.bolt} ${S.xp} XP</span>
-    <span class="chip lvl" title="${levelTitle()}">${ICONS.star} LV ${level()}</span>
-  `;
+  if(el){
+    el.innerHTML = `
+      <span class="chip streak" title="Days in a row you've shown up">${ICONS.flame} ${S.streak}</span>
+      <span class="chip xp" title="Experience points">${ICONS.bolt} ${S.xp} XP</span>
+      <span class="chip lvl" title="${levelTitle()}">${ICONS.star} LV ${level()}</span>
+    `;
+  }
+  const pill = document.getElementById("xppill");
+  if(pill){
+    pill.querySelector(".lv").textContent = "LV " + level();
+    pill.querySelector(".bar i").style.width = (level()>=LEVEL_TITLES.length ? 100 : xpIntoLevel()) + "%";
+    pill.querySelector(".clips").innerHTML = CLIP_ICON + "<b>" + S.clips + "</b>";
+  }
 }
 function markNav(){
   const h = location.hash;
@@ -1757,6 +2233,31 @@ function markNav(){
     const k = a.dataset.nav;
     const on = Object.keys(map).some(pref => map[pref]===k && h.startsWith(pref));
     a.classList.toggle("on", on);
+  });
+}
+
+/* ---------- mobile tab bar (≤680px only; hidden on desktop, so this is inert ≥681px) ---------- */
+const TABBAR = [
+  {nav:"home",   href:"#/",                    icon:"home",    label:"Home"},
+  {nav:"quiz",   href:"#/quiz",                icon:"compass", label:"Fit Finder"},
+  {nav:"tracks", href:"#/tracks",              icon:"lib",     label:"Tracks"},
+  {nav:"mocks",  href:"#/mocks",               icon:"mic",     label:"Mocks"},
+  {nav:"buzz",   href:"javascript:toggleBZ()", icon:"chat",    label:"Buzzwords", badge:true}
+];
+function renderTabbar(){
+  document.getElementById("tabbar").innerHTML = TABBAR.map(t=>`
+    <a class="tb" data-nav="${t.nav}" href="${t.href}">
+      <span class="ti">${ICONS[t.icon]}${t.badge?'<span class="tbadge" id="tbadge"></span>':""}</span>
+      <span class="tl">${t.label.toUpperCase()}</span>
+    </a>`).join("");
+}
+function markTabbar(){
+  const h = location.hash || "#/";
+  const map = {"#/quiz":"quiz","#/results":"quiz","#/tracks":"tracks","#/track/":"tracks","#/mocks":"mocks","#/mock/":"mocks"};
+  let cur = (h==="#/" || h==="#") ? "home" : null;   /* #/sources and unknown routes light nothing */
+  Object.keys(map).forEach(pref=>{ if(h.startsWith(pref)) cur = map[pref]; });
+  document.querySelectorAll("#tabbar .tb").forEach(el=>{
+    el.classList.toggle("on", el.dataset.nav==="buzz" ? BZ.open : el.dataset.nav===cur);
   });
 }
 
@@ -1817,6 +2318,7 @@ let RUN = null;
 
 function startMock(id){
   RUN = { id, qi:0, phase:"answer", answers:[], rubric:Array(byId(id).interview.length).fill(0), text:"" };
+  AI_RUN = null;
   go("#/mock/"+id);
 }
 function submitAns(){
@@ -1858,6 +2360,172 @@ function finishMock(){
   RUN.phase = "end";
   checkBadges(); confetti();
   render();
+}
+
+/* ============================================================
+   8b. AI GRADER — Z.AI GLM (opt-in, on the session summary)
+   Sends the session's typed answers to Z.ai's GLM API and gets
+   back a five-dimension rubric score per question plus an
+   overall verdict. The self-rubric is untouched; the summary
+   shows both scores side by side. If the call fails, the
+   self-score stands on its own.
+   ============================================================ */
+const AI_CFG = {
+  url:"https://api.z.ai/api/paas/v4/chat/completions",
+  model:"glm-4.5-flash", /* free-tier GLM; switch to "glm-4.6" if the Z.ai account gets credit */
+  timeoutMs:75000
+};
+/* the deeper rubric only the AI grades against — the self-rubric keeps its four ticks */
+const AI_RUBRIC = [
+  {k:"relevance",     ab:"REL", w:.25, d:"Answered the actual question asked, at the depth it asked for"},
+  {k:"structure",     ab:"STR", w:.15, d:"Behavioral: a real STAR story (Situation-Task-Action-Result). Technical: conclusion first, then ordered reasoning"},
+  {k:"specificity",   ab:"SPE", w:.20, d:"Concrete evidence — named tools, numbers, real projects, explicit trade-offs"},
+  {k:"depth",         ab:"DEP", w:.25, d:"Correct concepts and role-appropriate terminology compared to the reference answer"},
+  {k:"communication", ab:"COM", w:.15, d:"Clear and tight enough to say out loud in under two minutes"}
+];
+let AI_RUN = null; /* {forId, phase:"busy"|"done"|"error", result?, err?} */
+
+function aiPrompt(c){
+  const rub = AI_RUBRIC.map(r=>`- ${r.k} (weight ${r.w}): ${r.d}`).join("\n");
+  const qs = c.interview.map((q,i)=>({
+    n:i+1,
+    type:q.type==="b"?"behavioral":"technical",
+    question:q.q,
+    interviewers_listen_for:q.listen,
+    reference_strong_answer:q.model,
+    candidate_answer:(RUN.answers[i]||"").trim()||"(left blank)"
+  }));
+  return {
+    system:"You are a strict but fair entry-level interviewer for Information Systems roles. You grade conservatively: generic or vague answers score 1-2, only specific and correct answers earn 3-4, blanks score 0. You reply with JSON only — no prose outside the JSON.",
+    user:`Role being interviewed for: ${c.name} — ${c.blurb}\n\nGrade the candidate's ${qs.length} answers against this rubric. Each dimension is an integer 0-4 (0 absent, 1 weak, 2 adequate, 3 good, 4 strong):\n${rub}\n\nQuestions and answers:\n${JSON.stringify(qs,null,1)}\n\nReturn exactly this JSON shape:\n{"questions":[{"n":1,"scores":{"relevance":0,"structure":0,"specificity":0,"depth":0,"communication":0},"strength":"one line, max 90 chars, the best thing about the answer","fix":"one line, max 90 chars, the single highest-impact improvement"}],"overall":{"signal":"STRONG or MIXED or WEAK","verdict":"two sentences max: the honest overall read, then the one thing to work on before the real interview"}}\n\nJudge only what the candidate wrote. Do not restate their answer. Do not invent content for blanks.`
+  };
+}
+
+function aiClamp(v){ v = Math.round(Number(v)); return (isNaN(v)||v<0)?0:(v>4?4:v); }
+
+function aiParse(text){
+  let raw = text;
+  try{ raw = JSON.parse(text); }
+  catch(e){
+    const m = text.match(/\{[\s\S]*\}/);
+    if(!m) throw new Error("unparseable grader response");
+    raw = JSON.parse(m[0]);
+  }
+  if(!raw || !Array.isArray(raw.questions)) throw new Error("grader response missing questions");
+  return raw;
+}
+
+/* Two grading transports, tried in order:
+   1. Same-origin proxy — when served by `node server.js`, POST /api/grade. The key
+      lives on the server; the browser never sees it, loads no key file, and holds
+      no key material at all. A 404 means "no proxy on this host" → try direct.
+   2. Direct fallback — for opening index.html without the server (file:// or a
+      plain static host): lazily injects the local, gitignored ai-key.js, which
+      registers window.CLP_GRADE with the API key sealed inside a closure. */
+let graderScript = null;
+function loadGrader(){
+  if(!graderScript){
+    graderScript = new Promise(res=>{
+      const s = document.createElement("script");
+      s.src = "ai-key.js";
+      s.onload = ()=>res();
+      s.onerror = ()=>res();
+      document.head.appendChild(s);
+    });
+  }
+  return graderScript;
+}
+
+function aiExtract(data){
+  const content = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+  if(!content) throw new Error("empty grader response");
+  return aiParse(content);
+}
+
+async function aiViaProxy(payload){
+  const ctl = new AbortController();
+  const timer = setTimeout(()=>ctl.abort(), AI_CFG.timeoutMs);
+  let r;
+  try{
+    r = await fetch("/api/grade", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      signal:ctl.signal,
+      body:JSON.stringify(payload)
+    });
+  } finally{ clearTimeout(timer); }
+  if(r.status === 404 || r.status === 501) return null; /* no proxy on this host (404 = unknown path, 501 = static-only server) */
+  const data = await r.json().catch(()=>null);
+  if(!r.ok) throw new Error((data && data.error && data.error.message) || ("grading proxy HTTP " + r.status));
+  return aiExtract(data);
+}
+
+async function aiViaDirect(payload){
+  if(!window.CLP_GRADE){ await loadGrader(); }
+  if(!window.CLP_GRADE) throw new Error("ai-key.js not found next to index.html");
+  return aiExtract(await window.CLP_GRADE(AI_CFG.url, payload, AI_CFG.timeoutMs));
+}
+
+async function aiCall(c){
+  const p = aiPrompt(c);
+  const payload = {
+    model:AI_CFG.model,
+    thinking:{type:"disabled"},
+    response_format:{type:"json_object"},
+    temperature:0.3,
+    max_tokens:2600,
+    messages:[{role:"system",content:p.system},{role:"user",content:p.user}]
+  };
+  if(location.protocol === "http:" || location.protocol === "https:"){
+    try{
+      const parsed = await aiViaProxy(payload);
+      if(parsed) return parsed;
+    }catch(e){
+      if(e.name === "AbortError") throw new Error("grading timed out");
+      throw e; /* proxy answered — its error is authoritative */
+    }
+  }
+  return aiViaDirect(payload);
+}
+
+function aiNormalize(raw, c){
+  const perQ = c.interview.map((q,i)=>{
+    const r = raw.questions.find(x=>Number(x.n)===i+1) || raw.questions[i] || {};
+    const s = r.scores || {};
+    const dims = {};
+    AI_RUBRIC.forEach(d=>dims[d.k] = aiClamp(s[d.k]));
+    return {
+      score:Math.round(AI_RUBRIC.reduce((a,d)=>a + dims[d.k]*d.w, 0)*10)/10,
+      dims,
+      strength:String(r.strength||"").slice(0,110),
+      fix:String(r.fix||"").slice(0,110)
+    };
+  });
+  const total = Math.round(perQ.reduce((a,p)=>a+p.score,0)*10)/10;
+  const ov = raw.overall || {};
+  const signal = ["STRONG","MIXED","WEAK"].includes(ov.signal) ? ov.signal
+    : (total >= 13 ? "STRONG" : total >= 7 ? "MIXED" : "WEAK");
+  return { perQ, total, signal, verdict:String(ov.verdict||"").slice(0,320) };
+}
+
+function aiGrade(){
+  const c = byId(RUN.id);
+  AI_RUN = {forId:RUN.id, phase:"busy"};
+  render();
+  aiCall(c).then(raw=>{
+    const result = aiNormalize(raw, c);
+    AI_RUN = {forId:RUN.id, phase:"done", result};
+    const done = {...S.interviews};
+    const prev = done[RUN.id] || {done:true, ticks:RUN.rubric.reduce((a,b)=>a+b,0)};
+    prev.ai = {total:result.total, perQ:result.perQ.map(p=>p.score), signal:result.signal, verdict:result.verdict, model:AI_CFG.model};
+    done[RUN.id] = prev;
+    S.interviews = done; save();
+    toast("+AI", "GLM graded your session");
+    render();
+  }).catch(err=>{
+    AI_RUN = {forId:RUN.id, phase:"error", err:String((err && err.message) || err).slice(0,160)};
+    render();
+  });
 }
 
 /* ============================================================
@@ -2187,7 +2855,8 @@ function viewMocks(){
     <p style="color:var(--grey); max-width:70ch; margin-top:-8px">
       Five role-specific questions per track — the formats actually used in entry-level interviews.
       Answer in your own words first. Then reveal what a strong answer lands on, and score yourself
-      against the rubric. The thirty minutes before your interview counts double.
+      against the rubric. At the end you can ask GLM — Z.ai's AI — to grade the same answers against
+      a deeper five-dimension rubric. Two scores, one honest picture.
     </p>
     <div class="group-head"><span class="grule"></span><span class="gname">Pick your opponent</span><span class="gn">8</span></div>
     <div class="mock-grid">
@@ -2202,7 +2871,7 @@ function viewMocks(){
             </div>
             <h3>${esc(c.name)}</h3>
             <div style="font-size:12px; color:var(--grey); line-height:1.5">${esc(c.blurb)}</div>
-            <div class="meta">5 QUESTIONS · ~15 MIN ${done?`· ${done.ticks}/20 RUBRIC`:""}</div>
+            <div class="meta">5 QUESTIONS · ~15 MIN ${done?`· ${done.ticks}/20 SELF${done.ai?` · AI ${done.ai.total}/20`:""}`:""}</div>
           </div>
         </div>`;
       }).join("")}
@@ -2222,23 +2891,72 @@ function viewMockRun(id){
   if(RUN.phase==="end"){
     const ticks = RUN.rubric.reduce((a,b)=>a+b,0);
     const max = total*4;
+    const ai = (AI_RUN && AI_RUN.forId===RUN.id) ? AI_RUN : null;
+    const aiDone = ai && ai.phase==="done";
+
+    const aiPanel = !ai
+      ? `<div class="ai-cta">
+           <button class="btn btn-dark" onclick="aiGrade()">${ICONS.bolt} Grade with AI</button>
+           <span class="ai-note">Sends your five answers to Z.ai's GLM — the only thing that ever leaves this page. Optional.</span>
+         </div>`
+      : ai.phase==="busy"
+      ? `<div class="ai-cta">
+           <button class="btn btn-dark" disabled><span class="spin"></span>Grading…</button>
+           <span class="ai-note">GLM is reading your answers against a five-dimension rubric</span>
+         </div>`
+      : ai.phase==="error"
+      ? `<div class="ai-cta">
+           <span class="ai-err">AI grader unreachable — ${esc(ai.err)}.<br>Your self-score stands.</span>
+           <button class="btn btn-ghost btn-sm" onclick="aiGrade()">${ICONS.refresh} Try again</button>
+         </div>`
+      : `<div class="val">${ai.result.total}<span class="of">/${max}</span></div>
+         <div class="sub">SIGNAL: ${esc(ai.result.signal)} · ${esc(AI_CFG.model)}</div>`;
+
     return `
     <section class="wrap run-wrap">
       <div class="crumb"><a href="#/mocks">← ALL MOCKS</a> / ${esc(c.name).toUpperCase()}</div>
       <div class="card hard flat" style="padding:34px; margin-top:16px; text-align:center">
         <span class="stamp green">SESSION COMPLETE</span>
         <h2 style="font-size:34px; text-transform:uppercase; margin:14px 0 4px">${esc(c.name)}</h2>
-        <div class="pct mono" style="font-size:44px; font-weight:700; color:${c.color}; margin:10px 0">${ticks}<span style="font-size:.5em; color:var(--grey)">/${max} rubric</span></div>
+        <div class="ai-grid">
+          <div class="ai-panel">
+            <div class="lbl">Self-rubric — your ticks</div>
+            <div class="val">${ticks}<span class="of">/${max}</span></div>
+            <div class="sub">SCORED BY YOU, HONESTLY</div>
+          </div>
+          <div class="ai-panel glm">
+            <div class="lbl">AI grader — GLM (Z.ai)</div>
+            ${aiPanel}
+          </div>
+        </div>
         <p style="color:var(--grey); max-width:52ch; margin:0 auto 8px">
           ${ticks >= max*0.75 ? "Strong. You know what these answers sound like — now say them out loud until they're yours." :
             ticks >= max*0.5 ? "Solid foundation. Revisit the questions where you skipped rubric items — those are the gaps." :
             "This is what practice is for. Re-read the model answers, then retake it tomorrow. Reps compound."}
         </p>
         <div style="text-align:left; max-width:560px; margin:16px auto 0">
-          <ul class="end-quotes">
-            ${c.interview.map((q,i)=>`<li><span class="sc">${RUN.rubric[i]}/4</span><span>${esc(q.q)}</span></li>`).join("")}
+          <ul class="ai-q">
+            ${c.interview.map((q,i)=>{
+              const p = aiDone ? ai.result.perQ[i] : null;
+              return `<li>
+                <div><span class="sc s-self">SELF ${RUN.rubric[i]}/4</span>${p?`<span class="sc s-ai"> · AI ${p.score}/4</span>`:""}</div>
+                <div class="qq">${esc(q.q)}</div>
+                ${p?`<div class="dims">${AI_RUBRIC.map(d=>`${d.ab} ${p.dims[d.k]}`).join(" · ")}</div>
+                ${p.strength?`<div class="note"><b>BEST</b>${esc(p.strength)}</div>`:""}
+                ${p.fix?`<div class="note"><b>FIX</b>${esc(p.fix)}</div>`:""}`:""}
+              </li>`;
+            }).join("")}
           </ul>
         </div>
+        ${aiDone?`
+        <div class="ai-verdict" style="max-width:560px; margin:16px auto 0">
+          <div class="vh"><span>AI grader's read</span><span class="stamp blue" style="font-size:9px">${esc(ai.result.signal)}</span></div>
+          <p>${esc(ai.result.verdict)}</p>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; flex-wrap:wrap; gap:8px">
+            <span class="ai-attr">GRADED BY ${esc(AI_CFG.model).toUpperCase()} · Z.AI API · AI FEEDBACK, LABELED</span>
+            <button class="btn btn-ghost btn-sm" onclick="aiGrade()">${ICONS.refresh} Re-grade</button>
+          </div>
+        </div>`:""}
         <div style="display:flex; gap:12px; justify-content:center; margin-top:20px; flex-wrap:wrap">
           <button class="btn btn-ghost" onclick="startMock('${c.id}')">${ICONS.refresh} Retake</button>
           <button class="btn btn-primary" onclick="go('#/mocks')">${ICONS.arrow} Another track</button>
@@ -2268,7 +2986,7 @@ function viewMockRun(id){
         </details>
         <textarea class="ans" id="anstext" placeholder="Answer like you're in the room. Specifics beat length — real projects, real numbers, real trade-offs." oninput="onAnsInput(this)">${esc(RUN.text)}</textarea>
         <div class="ans-meta">
-          <span>SAVED LOCALLY WHILE YOU TYPE — NOTHING LEAVES THIS PAGE</span>
+          <span>SAVED ON THIS DEVICE — AI GRADING AT THE END IS OPT-IN</span>
           <span id="anscount">${RUN.text.trim().length} chars</span>
         </div>
         <div class="quiz-foot">
@@ -2356,6 +3074,17 @@ function viewSources(){
         <div class="sd">Behavioral questions follow the STAR structure companies actually score against; technical questions reflect what entry-level screens ask — not senior-level trivia.</div></li>
       </ul>
     </div>
+    <div class="card" style="margin-top:18px">
+      <div class="kicker">AI interview grader</div>
+      <ul class="src-list">
+        <li><div class="sn">GLM — Z.ai large language model API</div>
+        <div class="sd">The opt-in second opinion on the mock-interview summary. Currently the free-tier model <b>${AI_CFG.model}</b> ("thinking" disabled, JSON output); swap the model ID in the code for a larger GLM if the account has credit.</div></li>
+        <li><div class="sn">What it sees, and when</div>
+        <div class="sd">Only the typed answers from that one session, sent only when you press "Grade with AI". No name, no email, no progress data. When the app is served by our grading server, answers route through it so the API key never touches your browser; opened as a plain file, the app calls Z.ai directly with a locally stored key. Everything else in this app stays in your browser's local storage.</div></li>
+        <li><div class="sn">Attribution</div>
+        <div class="sd">The grader's per-question notes and verdict are AI-generated and labeled as such in-app, per case rules. The questions, model answers, and both rubrics are our own writing.</div></li>
+      </ul>
+    </div>
     <div class="moneynote" style="margin-top:18px"><b>Honest disclaimer</b>
       Ranges aggregate national data; the Utah market runs roughly 10–20% below coastal tech for the same titles.
       Treat every figure as a hypothesis to verify against a live posting or a real human before it matters.
@@ -2384,11 +3113,13 @@ function render(){
   annotate(app);
   renderChips();
   markNav();
+  markTabbar();
   window.scrollTo(0,0);
 }
 
 /* keyboard: 1-6 selects quiz options (but never while typing in the panel search) */
 document.addEventListener("keydown", e=>{
+  if(e.key === "Escape" && document.getElementById("pm-ov")){ closeProgress(); return; }
   if(e.key === "Escape" && BZ.open){ toggleBZ(false); return; }
   if(location.hash==="#/quiz" && Q && e.target.tagName!=="TEXTAREA" && e.target.tagName!=="INPUT"){
     const n = parseInt(e.key,10);
@@ -2405,7 +3136,9 @@ document.addEventListener("keydown", e=>{
 });
 
 window.addEventListener("hashchange", render);
+renderTabbar();
 touchStreak();
+applyCosmetics();
 renderChips();
 renderBZ();
 render();
