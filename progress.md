@@ -298,6 +298,11 @@ is ever accidentally committed, remove it from history AND rotate the key.
   the new build (HTTP 200, tabbar markup present) and `/api/grade` responds.
   The Jarin.dev repo now also has the folder committed (`e858859`) so it
   matches the server; its other in-flight edits were left uncommitted.
+- **Copy pass (same day)**: de-emphasized the fixed count — hero headline is
+  now "MANY TRACKS. / ONE DEGREE.", and every "eight tracks / 8 TRACKS" is now
+  "all the tracks" (microline, hero link, tracks-page h2, footer, Otto line).
+  Dossier/mock progress counts (x/8) are untouched — they count actual content.
+  Published to GitHub and jarin.dev immediately after.
 
 ### Next up (waiting on team input)
 - Replace placeholder interview questions with researched real ones (edit the
