@@ -73,6 +73,9 @@ button{font-family:var(--font-ui)}
 .appbar{
   position:sticky; top:0; z-index:50; background:var(--appbar-bg);
   border-bottom:1px solid var(--line); backdrop-filter:blur(6px);
+  /* installed app (standalone): bar grows to clear the phone status bar;
+     inset is 0 in a normal browser tab, so nothing changes there */
+  padding-top:env(safe-area-inset-top, 0);
 }
 .appbar .row{display:flex; align-items:center; gap:18px; height:60px}
 .brand{display:flex; align-items:center; gap:10px; cursor:pointer; user-select:none}
@@ -433,6 +436,12 @@ button{font-family:var(--font-ui)}
 .about ul{padding-left:20px; margin:8px 0}
 .about .src{border:1px solid var(--line); border-radius:12px; padding:14px 16px; margin:10px 0; background:var(--card)}
 .about .src .sk{font:700 10px var(--font-mono); letter-spacing:.14em; text-transform:uppercase; color:var(--grey)}
+.about .inst-hint{
+  font:500 10.5px/1.9 var(--font-mono); letter-spacing:.1em; text-transform:uppercase;
+  color:var(--ink2); margin:12px 0 0;
+}
+.about .inst-hint b{color:var(--ink); font-weight:700}
+#installbtn{margin-top:12px}
 
 /* ---------- progress modal + shop ---------- */
 .modal-root{position:fixed; inset:0; z-index:400; display:flex; align-items:flex-start; justify-content:center; padding:44px 16px; overflow-y:auto}

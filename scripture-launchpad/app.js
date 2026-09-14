@@ -1,8 +1,9 @@
 /* ============================================================
    SCRIPTURE LAUNCHPAD — app.js
    Chapter-by-chapter study guides + easy 3-question quizzes
-   across the five standard works. Zero network calls; everything
-   persists to localStorage["slp_state_v1"].
+   across the five standard works. No app-data network calls; everything
+   persists to localStorage["slp_state_v1"]. sw.js (precache service
+   worker) makes it an installable, offline phone app.
    Sections:
    0. DATA — volumes, canon normalize
    1. STATE
@@ -15,6 +16,7 @@
    8. SHOP + PROGRESS MODAL + PILL
    9. VIEWS
    10. ROUTER + KEYBOARD + TABBAR
+   11. SERVICE WORKER + INSTALL (PWA)
    ============================================================ */
 (function(){
 "use strict";
@@ -1086,6 +1088,22 @@ function renderQDone(body){
 }
 
 /* ---- about ---- */
+function installCardHTML(){
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  let action;
+  if (isStandalone())
+    action = '<p class="inst-hint">INSTALLED — YOU ARE RUNNING THE APP. IT WORKS WITH NO CONNECTION.</p>';
+  else if (isIOS)
+    action = '<p class="inst-hint">IN SAFARI: TAP THE <b>SHARE</b> BUTTON, THEN <b>ADD TO HOME SCREEN</b>.</p>';
+  else if (installPrompt)
+    action = '<button type="button" class="btn btn-primary btn-sm" id="installbtn">Install on this phone '+icon("arrow",15)+'</button>';
+  else
+    action = '<p class="inst-hint">USE YOUR BROWSER\'S INSTALL OR ADD-TO-HOME-SCREEN OPTION — NO STORE, NO ACCOUNT.</p>';
+  return '<div class="src"><span class="sk">PHONE APP — WORKS OFFLINE</span>'
+    +'<p>Scripture Launchpad installs to your home screen like a native app. All five volumes are stored on the device, so reading, quizzes, and flashcards keep working with zero signal — planes, cabins, mission trips.</p>'
+    +action
+    +'</div>';
+}
 function viewAbout(){
   view.innerHTML =
   '<div class="wrap"><div class="about">'
@@ -1093,6 +1111,8 @@ function viewAbout(){
   +'<h1 style="font-size:clamp(30px,4vw,44px);font-weight:900;text-transform:uppercase">The fine print</h1>'
   +'<h2>What this is</h2>'
   +'<p>Scripture Launchpad is a chapter-by-chapter study companion for the five standard works: pick a chapter, read a short original guide, take an easy three-question quiz, and keep your reading streak alive. It runs entirely in your browser as a student project.</p>'
+  +'<h2>Take it to your phone</h2>'
+  + installCardHTML()
   +'<h2>Content &amp; sources</h2>'
   +'<div class="src"><span class="sk">SCRIPTURE TEXT</span><p>The complete text of all five standard works (LDS edition) is included — open any chapter and read it right here on the platform. Text © Intellectual Reserve, Inc., reproduced for noncommercial, personal study use. The official text lives in the <a href="https://www.churchofjesuschrist.org/study?lang=eng" target="_blank" rel="noopener">Gospel Library</a>.</p></div>'
   +'<div class="src"><span class="sk">STUDY GUIDES &amp; QUIZZES</span><p>Original work written for this project, drafted with AI assistance and edited by the team. They summarize and quiz — they do not replace the text itself.</p></div>'
@@ -1109,6 +1129,12 @@ function viewAbout(){
   +'<h2>Credits</h2>'
   +'<p>Built by the SBLearn team — the second site on the same platform as the <a href="https://jarin.dev/CareerLaunchpad/" target="_blank" rel="noopener">IS Career Launchpad</a>.</p>'
   +'</div></div>';
+  const ib = document.getElementById("installbtn");
+  if (ib) ib.addEventListener("click", () => {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    installPrompt.userChoice.then(() => { installPrompt = null; });
+  });
 }
 
 function notFound(){
@@ -1202,6 +1228,38 @@ document.getElementById("resetlink").addEventListener("click", e=>{
   }
 });
 window.addEventListener("hashchange", route);
+
+/* ============ 11. SERVICE WORKER + INSTALL (PWA) ============
+   sw.js precaches the whole app (all scripture text included), so the
+   site installs to a phone home screen and then works fully offline.
+   Registered only when actually served over http(s) — file:// and the
+   dev double-click flow are untouched. */
+let installPrompt = null;   /* captured beforeinstallprompt event */
+function isStandalone(){
+  return matchMedia("(display-mode: standalone)").matches || !!navigator.standalone;
+}
+if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)){
+  window.addEventListener("beforeinstallprompt", e => {
+    e.preventDefault();
+    installPrompt = e;
+  });
+  window.addEventListener("appinstalled", () => {
+    installPrompt = null;
+    toast("INSTALLED", "LOOK FOR THE LAMP ON YOUR HOME SCREEN");
+  });
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").then(reg => {
+      reg.addEventListener("updatefound", () => {
+        const w = reg.installing;
+        if (!w) return;
+        w.addEventListener("statechange", () => {
+          if (w.state === "installed" && navigator.serviceWorker.controller)
+            toast("UPDATE READY", "RELOAD TO PICK IT UP");
+        });
+      });
+    }).catch(()=>{});
+  });
+}
 
 /* boot */
 applyCosmetics();
