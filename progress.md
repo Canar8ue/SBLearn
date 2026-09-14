@@ -398,6 +398,21 @@ is ever accidentally committed, remove it from history AND rotate the key.
   layer + screenshots decayed mid-session again (known failure mode; clicks via evaluate) —
   do the usual 2-minute manual click-through before demoing.
 
+### 2026-09-14 — published (Session 12)
+- **GitHub**: committed as `bcd6b1f` and pushed to `main` on Canar8ue/SBLearn. Secret
+  scan: no keys anywhere in the new files (text chunks are scripture; text-src stays
+  gitignored). The unrelated logo rename (LogoISCore → LogoCareerLaunchpad) was left
+  uncommitted on purpose.
+- **jarin.dev (production)**: synced the scripture-launchpad folder into
+  `../Jarin.dev/static/projects/scripture-launchpad/` (runtime files only: index.html,
+  styles.css, app.js, data/ — dev tools and text-src not shipped), committed there as
+  `68ee4a8` (repo's other in-flight edits left uncommitted per precedent), scp'd to the
+  GCloud server, `docker compose up -d --build`.
+- Verified live: index.html 200 with the text-manifest script tag; text-ot-1 / text-dc-od
+  / text-pgp-1 / manifest all 200; homepage card NO. 1 still present; loaded
+  `…/scripture-launchpad/index.html#/read/1-ne/3` in the browser from production —
+  31 verses render with the © IRI attribution line.
+
 ### Next up (waiting on team input)
 - Replace placeholder interview questions with researched real ones (edit the
   `interview` array inside each career in `CAREERS`).
