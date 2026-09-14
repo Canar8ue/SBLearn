@@ -304,6 +304,57 @@ is ever accidentally committed, remove it from history AND rotate the key.
   Dossier/mock progress counts (x/8) are untouched — they count actual content.
   Published to GitHub and jarin.dev immediately after.
 
+### 2026-09-14 — Session 11: Scripture Launchpad (2nd site on the platform)
+- **New product, new folder**: `scripture-launchpad/` — a scripture study app with the
+  same UI system (flat Google × print-shop retro, XP/streak/badges/clips/shop,
+  orange-underlined gospel-terms glossary + flashcards) rethemed for the five standard
+  works. The career site was not touched.
+- **Learning model replaces quiz-first design**: chapter-by-chapter study — each chapter
+  page has an original summary (WHAT HAPPENS), a context line (who/where/when), 1-3
+  quoted key verses, a one-line TAKE AWAY, then a **3-question auto-graded quiz**
+  (one question at a time, instant right/wrong + why, FLAWLESS stamp on 3/3).
+  Completing a quiz auto-marks the chapter read. +10 XP read · +15 quiz · +5 perfect.
+  Zero network calls, zero API keys, state in localStorage `slp_state_v1`.
+- **Content (v1)**: Book of Mormon **complete** — all 237 chapters with study guides +
+  quizzes (711 questions). All five volumes fully structured with reading trackers:
+  OT 39 books/929 chapters, NT 27/260, D&C 138 sections + 2 Official Declarations,
+  PGP 16 — skeleton chapters show "study guide in progress" + read toggle. OT/NT/D&C/PGP
+  guides come in follow-up passes. 81-term gospel glossary. Authoring was split between
+  subagents and direct writing; every file validated by `validate.js` (schema) and
+  `check.js` (merge/ordering/regex/answer-distribution), spot-checked for accuracy.
+- **App structure** (multi-file now): `index.html` + `styles.css` + `app.js` +
+  `data/*.js` (plain script tags, so file:// double-click still works). Volume accents:
+  OT brick/NT blue/BoM gold/D&C teal/PGP violet. Mascot: **Wick** the pixel oil lamp
+  (deadpan lines, 12 more in the shop). Shop: 3 accent packs (Sea of Galilee,
+  Wilderness, Liahona), Midnight theme, the Shop Ox, Wick's Second Journal, Full-Deck
+  Confetti. Mobile tab bar: HOME / VOLUMES / READ / TERMS / YOU.
+- **Quiz answer rotation**: authored data keeps answers wherever the author put them;
+  `renderQ` rotates choices deterministically per chapter+question so the answer index
+  is never a tell.
+- **Three bugs found by browser testing**: (1) `[hidden]` attribute defeated by
+  `display:flex` on `.modal-root`/`.fc-overlay` — invisible overlay swallowed all
+  clicks; fixed with a global `[hidden]{display:none!important}`. (2) clips pill went
+  stale after shop purchases (missing `updatePill`). (3) read button went stale after a
+  quiz auto-marked the chapter read.
+- **NEW RULE (user)**: deploy **max 5 subagents at a time**. (The first 12-concurrent
+  batch hit Z.ai-style rate limits — 4 agents failed; see API key note pattern.)
+- **Subagent reality check**: of the first 12 background agents, 4 failed fast on rate
+  limits and the other 8 stalled silently for 50+ min. Recovery: authored canon.js,
+  glossary.js, and 6 BoM parts directly; dispatched a fresh batch of 5 (within the new
+  rule) for the remaining parts — all completed and validated.
+- **Live on jarin.dev**: `static/projects/scripture-launchpad/` + homepage card NO. 1
+  (top of `data/projects.json`, thumbnail `static/images/scripture-launchpad.png`,
+  flat pixel-lamp art generated with PIL). Slug routing already handles
+  `/ScriptureLaunchpad/`. Deployed via scp (folder + projects.json + thumbnail) +
+  `docker compose up -d --build`; verified live: homepage card, app 200, all data
+  files 200, "5 VOLUMES /// 1,582 CHAPTERS" renders.
+- **Test status**: function-level browser verification done (quiz flow, XP math
+  incl. badge bonuses, shop buy/equip/persistence, Midnight + accent live-rewiring,
+  glossary panel/flashcards/familiarity, mobile 390×844 layout, desktop 1280 layout).
+  The in-app browser's input layer + screenshots were broken this whole session
+  (known IAB failure mode) — clicks were driven via evaluate; **do a 2-minute manual
+  click-through before demoing**.
+
 ### Next up (waiting on team input)
 - Replace placeholder interview questions with researched real ones (edit the
   `interview` array inside each career in `CAREERS`).
@@ -393,11 +444,21 @@ ISCore1/                                    # repo root
 ├── .git/                                   # Git data (never edit)
 ├── CORE CASE F26 - IS Career Launchpad_v2.pdf   # Case brief (LOCAL ONLY)
 ├── case_text.txt                           # Scratch dump of PDF (ignored)
-└── career-launchpad/
-    ├── index.html                          # The entire app
-    ├── server.js                           # Static server + /api/grade grading proxy (key stays server-side)
-    ├── ai-key.js                           # LOCAL ONLY (gitignored): Z.ai key — closure for browser, export for server
-    └── ai-key.example.js                   # Template to create ai-key.js (committed)
+├── career-launchpad/                       # Site 1: IS Career Launchpad (case project)
+│   ├── index.html                          # The entire app
+│   ├── server.js                           # Static server + /api/grade grading proxy (key stays server-side)
+│   ├── ai-key.js                           # LOCAL ONLY (gitignored): Z.ai key — closure for browser, export for server
+│   └── ai-key.example.js                   # Template to create ai-key.js (committed)
+└── scripture-launchpad/                    # Site 2: Scripture Launchpad (Session 11)
+    ├── index.html                          # Shell: appbar, mounts, script tags
+    ├── styles.css                          # Full design system (same language as career)
+    ├── app.js                              # State, XP/shop/badges, glossary, views, router
+    ├── validate.js                         # Dev: schema validation harness (node validate.js)
+    ├── check.js                            # Dev: merge/ordering/glossary/answer checks (node check.js)
+    └── data/                               # Plain-JS data (script tags; file:// works)
+        ├── canon.js                        # OT/NT/D&C/PGP book skeletons
+        ├── glossary.js                     # 81 gospel terms
+        └── bom-01…10-*.js                  # Book of Mormon: all 237 chapters authored
 ```
 
 Everything lives in `career-launchpad/`. **Recommended:** `node server.js` in that
@@ -478,6 +539,9 @@ Z.ai API allows CORS from localhost and from `Origin: null` (file://).
    (course material — don't publish it).
 9. **Update this file** (`progress.md`) at the end of every working session: log what
    changed, what broke, what's next.
+10. **Max 5 subagents at a time** (Session 11 rule). Bigger batches hit provider rate
+    limits; stalled agents also block file writes. Stagger waves of ≤5 and wait for
+    completions before dispatching more.
 
 ---
 
