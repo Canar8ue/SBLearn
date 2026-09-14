@@ -39,3 +39,27 @@ console.log("sample hits:", [...new Set(hits)].join(", "));
 const dist = { 0: 0, 1: 0, 2: 0, 3: 0 }; let qn = 0;
 ordered.forEach(b => b.chapters.forEach(c => c.quiz && c.quiz.forEach(q => { dist[q.a]++; qn++; })));
 console.log("quiz questions:", qn, "| answer index distribution:", JSON.stringify(dist));
+
+/* full-text coverage: every canon unit must have scripture text */
+const T = window.SLP_TEXT || {};
+const FILES = window.SLP_TEXT_FILES || {};
+let tChapters = 0, tVerses = 0, textProblems = 0;
+ordered.forEach(b => {
+  const bk = T[b.id];
+  if (!bk) { console.log("TEXT MISSING BOOK", b.id); textProblems++; return; }
+  const verses = bk.verses; // Official-Declaration-style flat paragraphs
+  if (verses) {
+    if (!verses.length) { console.log("TEXT EMPTY", b.id); textProblems++; }
+    if (units(b) !== 1) console.log("TEXT/UNIT MISMATCH", b.id, "flat vs", units(b), "units");
+    tChapters++; tVerses += verses.length;
+    return;
+  }
+  const ns = Object.keys(bk).map(Number);
+  if (ns.length !== units(b)) { console.log("TEXT COUNT", b.id, "text:", ns.length, "canon:", units(b)); textProblems++; }
+  for (let n = 1; n <= units(b); n++) {
+    if (!Array.isArray(bk[n]) || !bk[n].length) { console.log("TEXT MISSING CH", b.id, n); textProblems++; continue; }
+    tChapters++; tVerses += bk[n].length;
+  }
+});
+const manifestTotal = Object.values(FILES).reduce((s, a) => s + a.length, 0);
+console.log("text:", tChapters, "chapters,", tVerses, "verses | manifest files:", manifestTotal, "| text problems:", textProblems);

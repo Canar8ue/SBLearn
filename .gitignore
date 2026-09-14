@@ -7,6 +7,9 @@ case_text.txt
 # Secrets — local only, never publish (AI grader reads this at runtime)
 career-launchpad/ai-key.js
 
+# Scripture text sources (© IRI — keep local; regenerate data/text-*.js via tools/build-text.js)
+scripture-launchpad/text-src/
+
 # OS junk
 Thumbs.db
 .DS_Store

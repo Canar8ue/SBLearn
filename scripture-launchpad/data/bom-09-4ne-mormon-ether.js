@@ -107,6 +107,32 @@ SLP.books.push({
         { q:"What does Mormon tell them about their identity?", choices:["They are of the house of Israel and of the covenant","They are Gentiles","They are of the Jaredites","They have no lineage"], a:0, why:"Know ye that ye are of the house of Israel, of the covenant the Father made to Abraham." },
         { q:"What double command closes Mormon's teaching?", choices:["Repent, be baptized, and lay down weapons of war forever","Build temples and cities","Keep the law of Moses","Seek vengeance"], a:0, why:"Repentance, baptism in Christ's name, and an end to murder open the door to the Holy Ghost." }
       ]
+    },
+    { n:8, summary:"Moroni writes alone: Mormon is fallen in the last battle, the Nephites are no more, and he has hidden the plates so the record can one day come forth. He tells the future reader the book will be of great worth, that Jesus Christ has shown him our day, and that no power can stop the eternal purposes of the Lord from being fulfilled.",
+      context:"Moroni, the son of Mormon, writing alone around 400-421 AD after the destruction of his people.",
+      keyVerses:[
+        { ref:"Mormon 8:3", text:"And my father also was killed by them, and I even remain alone to write the sad tale of the destruction of my people." },
+        { ref:"Mormon 8:35", text:"Behold, I speak unto you as if ye were present, and yet ye are not. But behold, Jesus Christ hath shown you unto me, and I know your doing." }
+      ],
+      takeaway:"The record outlives its people on purpose — Moroni writes across fifteen centuries to readers he has already seen.",
+      quiz:[
+        { q:"Who writes Mormon 8?", choices:["Moroni, the son of Mormon","Mormon himself","Nephi, son of Helaman","The prophet Ether"], a:0, why:"Mormon fell in the final battle; his son Moroni survives alone and finishes the record." },
+        { q:"What does Moroni know about the people who will one day read the book?", choices:["Christ has shown them unto him, and he knows their doing","That none of them will ever believe","Nothing — he writes only for his own time","That they are his direct descendants"], a:0, why:"Behold, I speak unto you as if ye were present... Jesus Christ hath shown you unto me, and I know your doing." },
+        { q:"What does Moroni say about the Lord's promises?", choices:["The eternal purposes of the Lord shall roll on until all are fulfilled","They expired with the Nephite nation","They apply only to the Lamanites","They were cancelled because of unbelief"], a:0, why:"For the eternal purposes of the Lord shall roll on, until all his promises shall be fulfilled." }
+      ]
+    },
+    { n:9, summary:"Moroni answers the critics of the latter days: denying revelation denies the power of God, and God is not changed — he is the same yesterday, today, and forever, still a God of miracles. The law of Moses is fulfilled in Christ; signs follow those who believe; and the doubter's honest move is to ask God the Father in the name of Christ.",
+      context:"Moroni's follow-on warning, still writing alone, to the book's future doubters.",
+      keyVerses:[
+        { ref:"Mormon 9:9", text:"God is the same yesterday, today, and forever, and in him there is no variableness neither shadow of changing..." },
+        { ref:"Mormon 9:25", text:"Whosoever shall believe in my name, doubting nothing, unto him will I confirm all my words, even unto the ends of the earth." }
+      ],
+      takeaway:"Doubt is answered by asking: the God of the scriptures has not ceased to be a God of miracles.",
+      quiz:[
+        { q:"What is Moroni's answer to those who say revelation is done away?", choices:["God is unchangeable — he spoke anciently, so he speaks now","Revelation is only for prophets of the past","The scriptures have replaced revelation","It does not matter either way"], a:0, why:"If God wrought miracles then, why has he ceased to be a God of miracles and yet be an unchangeable Being?" },
+        { q:"According to Moroni, who sees signs and miracles?", choices:["Those who believe in Christ, doubting nothing","Only the original Twelve disciples","Those who demand proof before believing","No one after Christ's resurrection"], a:0, why:"Whoso believeth in Christ, doubting nothing, whatsoever he shall ask the Father in the name of Christ shall receive it." },
+        { q:"What should a doubter do with questions about this record?", choices:["Ask God the Father in the name of Christ","Wait for scholars to settle it first","Dismiss the book as legend","Trust feelings without study"], a:0, why:"Despise not, and wonder not, but hearken unto the words of the Lord, and ask the Father in the name of Jesus for what things soever ye stand in need." }
+      ]
     }
   ]
 });

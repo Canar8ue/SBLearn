@@ -365,6 +365,27 @@ button{font-family:var(--font-ui)}
 .comingsoon p{color:var(--grey); max-width:60ch}
 .chapter-nav{display:flex; justify-content:space-between; gap:12px; margin-top:30px; flex-wrap:wrap}
 
+/* ---------- full-chapter reading ---------- */
+.readpage{max-width:760px; padding-bottom:60px}
+.chap-head .readtoggle{display:inline-flex; align-items:center; gap:10px}
+.readmeta{
+  font:500 10.5px var(--font-mono); letter-spacing:.12em; text-transform:uppercase;
+  color:#9aa0a6; margin:4px 0 20px;
+}
+.readmeta a{color:#9aa0a6; text-decoration:underline}
+.readmeta a:hover{color:var(--grey)}
+.scripture{font:400 17px/1.85 var(--font-ui); color:var(--ink2)}
+.scripture .v{margin:0 0 3px}
+.scripture .vn{
+  font:700 10px var(--font-mono); letter-spacing:.04em;
+  color:var(--acc, var(--blue-d)); position:relative; top:-4px; margin-right:7px;
+}
+.scripture .svh{
+  font:800 12px var(--font-mono); letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink); margin:28px 0 10px;
+}
+.read-nav{display:flex; justify-content:space-between; gap:12px; margin-top:36px; flex-wrap:wrap}
+
 /* ---------- quiz ---------- */
 .quizcard{margin-top:16px}
 .quizcard .qh{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px}
@@ -571,8 +592,10 @@ footer{border-top:1px solid var(--line); margin-top:40px; background:var(--surfa
   .det-head .head-cta{margin-left:0; width:100%; flex-direction:row}
   .btn-full{width:100%; justify-content:center}
   .chapter-nav .btn{flex:1; justify-content:center}
+  .read-nav .btn{flex:1; justify-content:center}
   .chap-head .readtoggle{margin-left:0; width:100%}
-  .chap-head .readtoggle button{width:100%; justify-content:center}
+  .chap-head .readtoggle button, .chap-head .readtoggle .btn{flex:1; justify-content:center}
+  .scripture{font-size:16px; line-height:1.75}
   .quizcard .qh .qmeta{margin-left:0; width:100%}
   .toasts{left:10px; right:10px; bottom:calc(96px + env(safe-area-inset-bottom))}
   .toast{width:100%}

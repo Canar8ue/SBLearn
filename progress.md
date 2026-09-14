@@ -355,6 +355,49 @@ is ever accidentally committed, remove it from history AND rotate the key.
   (known IAB failure mode) — clicks were driven via evaluate; **do a 2-minute manual
   click-through before demoing**.
 
+### 2026-09-14 — Session 12: full scripture text on the platform
+- **Every chapter of all five standard works is now readable in the app** — no leaving the
+  site. New read view at `#/read/<bid>/<n>` (the chapter segment is optional for single-unit
+  books): volume-accented header, verse-per-paragraph text with accent-colored verse numbers,
+  prev/next chapter nav that crosses book boundaries (Malachi 4 → Matthew 1), a "Study guide"
+  link back on guided chapters, and the same MARK AS READ toggle (+10 XP, badges, streak).
+  Gospel-terms annotation runs on scripture text too (hover/tap tooltips as everywhere else).
+- **Source**: official Gospel Library text (2013 edition) via the `bcbooks/scriptures-json`
+  dataset + Official Declarations 1–2 scraped from churchofjesuschrist.org (the dataset lacks
+  the ODs). Coverage: **1,584 chapters, 42,033 verses**. Text is © Intellectual Reserve, Inc. —
+  attribution line on every read view ("TEXT © INTELLECTUAL RESERVE, INC. /// OFFICIAL TEXT IN
+  THE GOSPEL LIBRARY") + rewritten About card + footer; raw source JSONs stay in gitignored
+  `text-src/`. Fine for a noncommercial student project with attribution.
+- **Data pipeline**: `tools/build-text.js` (dev tool, committed) converts `text-src/*.json` →
+  `data/text-manifest.js` (volume→chunk map) + 13 `data/text-*.js` chunks (~6.3 MB total,
+  whole books, ≤~700 KB each). Chunks **lazy-load per volume** on first read-view visit
+  (script injection), so boot is unchanged and file:// double-click still works. Regenerate
+  with `node tools/build-text.js`. `SLP_TEXT[bid]` = `{n:[verse,...]}`, or
+  `{verses:[...], heads:{beforeIndex:title}}` for the ODs' subsection headings.
+- **Chapter pages**: header now carries a dark **Read full chapter** button next to MARK AS
+  READ; skeleton ("study guide in progress") pages traded the old external Gospel Library
+  link for a primary in-app **Read the full chapter** CTA. The mobile READ tab now opens the
+  read view of the continue target (it is called Read, it reads).
+- **Copy**: home microline now "FULL TEXT INCLUDED"; About "Scripture text" card rewritten
+  (full text included, © IRI, noncommercial use); footer no longer claims the text is public
+  domain. Meta description mentions the full text.
+- **Data fix found by the new coverage check**: the Book of Mormon was actually missing
+  **Mormon 8–9** (237 → 239 chapters). Both authored in house style (Moroni alone after
+  Cumorah; Moroni's answer to latter-day doubters). Quiz total 711 → **717**. Site-wide
+  totals (home microline, volumes page) compute dynamically and now read 1,584.
+- **Label fix**: single-unit books no longer render "OFFICIAL DECLARATION 1 1" —
+  `bidLabel`/`viewChapter` collapse the trailing unit number when `unitCount(b)===1`.
+- **Bugs caught by browser testing**: (1) forgot the `text-manifest.js` script tag on the
+  first run — read view correctly fell back to the "not available" card, which is how the
+  fallback got tested; (2) `#/read/od-1` without a chapter segment hit the lost-page route —
+  segment is now optional.
+- **Test status**: `validate.js` + extended `check.js` (now verifies text coverage: every
+  canon unit must have verses) pass with 0 problems. Desktop 1280 vision-checked light +
+  Midnight (incl. Psalm 119, 176 verses). Mobile 390×844 function-checked: READ tab active
+  state, full-width controls, 16px/1.75 reading type, no horizontal overflow. The IAB input
+  layer + screenshots decayed mid-session again (known failure mode; clicks via evaluate) —
+  do the usual 2-minute manual click-through before demoing.
+
 ### Next up (waiting on team input)
 - Replace placeholder interview questions with researched real ones (edit the
   `interview` array inside each career in `CAREERS`).
@@ -454,11 +497,16 @@ ISCore1/                                    # repo root
     ├── styles.css                          # Full design system (same language as career)
     ├── app.js                              # State, XP/shop/badges, glossary, views, router
     ├── validate.js                         # Dev: schema validation harness (node validate.js)
-    ├── check.js                            # Dev: merge/ordering/glossary/answer checks (node check.js)
+    ├── check.js                            # Dev: merge/ordering/glossary/text coverage checks (node check.js)
+    ├── tools/
+    │   └── build-text.js                   # Dev: text-src/*.json → data/text-*.js (node tools/build-text.js)
+    ├── text-src/                           # LOCAL ONLY (gitignored): Gospel Library text JSONs (© IRI)
     └── data/                               # Plain-JS data (script tags; file:// works)
         ├── canon.js                        # OT/NT/D&C/PGP book skeletons
         ├── glossary.js                     # 81 gospel terms
-        └── bom-01…10-*.js                  # Book of Mormon: all 237 chapters authored
+        ├── text-manifest.js                # Volume → text-chunk file map (generated, tiny)
+        ├── text-*.js                       # Full scripture text chunks — lazy-loaded per volume (generated)
+        └── bom-01…10-*.js                  # Book of Mormon: all 239 chapters authored
 ```
 
 Everything lives in `career-launchpad/`. **Recommended:** `node server.js` in that
@@ -487,8 +535,14 @@ Z.ai API allows CORS from localhost and from `Origin: null` (file://).
 
 ## 5. Things to know
 
-- **Hash-routed SPA**: `#/` home · `#/quiz` · `#/results` · `#/tracks` · `#/track/<id>` ·
-  `#/mocks` · `#/mock/<id>` · `#/sources`. Route → render → `annotate()` pass for buzzwords.
+- **Hash-routed SPA** (career site): `#/` home · `#/quiz` · `#/results` · `#/tracks` ·
+  `#/track/<id>` · `#/mocks` · `#/mock/<id>` · `#/sources`. Route → render → `annotate()`.
+- **Scripture Launchpad routes**: `#/` home · `#/volumes` · `#/volume/<vid>` · `#/book/<bid>` ·
+  `#/chapter/<bid>/<n>` · `#/read/<bid>/<n>` (full scripture text; chapter segment optional
+  for single-unit books) · `#/about`. Route → render → `annotate()` pass for gospel terms.
+- **Scripture full text**: `SLP_TEXT[bid]` (lazy-loaded per volume via `ensureText`; see
+  Session 12) holds every chapter's verses; `data/text-manifest.js` maps volumes to chunk
+  files. Read view = `viewRead`; linked from every chapter page + the mobile READ tab.
 - **State** lives in module vars (`S`, `Q`, `RUN`, `BZ`, `AI_RUN`) and persists to
   `localStorage["clp_state_v1"]`: `{xp, streak, lastDay, read[], quizDone, quizTop,
   quizScores, interviews{}, badges[], buzz{}, clips, owned[], cosmetics{accent,
