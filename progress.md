@@ -398,6 +398,43 @@ is ever accidentally committed, remove it from history AND rotate the key.
   layer + screenshots decayed mid-session again (known failure mode; clicks via evaluate) —
   do the usual 2-minute manual click-through before demoing.
 
+### 2026-09-15 — Session 14: Android APK via GitHub Actions
+- **The Scripture Launchpad now ships as a real Android APK**, rebuilt
+  automatically on every push: download from the moving pre-release
+  **https://github.com/Canar8ue/SBLearn/releases/tag/android-latest**
+  (`ScriptureLaunchpad.apk`, ~2 MB, universal). Same signing key every build, so
+  updates install over the previous version.
+- **WebView shell, site bundled**: `scripture-launchpad/android/` is a
+  zero-dependency Android project (framework WebView, no AndroidX) that loads
+  `file:///android_asset/index.html`. The workflow copies `index.html`,
+  `styles.css`, `app.js`, `data/` into assets at build time — so the APK is
+  **fully offline by construction** (no service worker needed; sw.js stays
+  skipped on file:// by the http(s) guard in app.js). Wired: JS + DOM storage
+  (localStorage works), WebChromeClient (the reset confirm() works), back key
+  walks hash history (chapter-by-chapter back nav), external http(s) links open
+  in the browser, ink status bar, rotation doesn't reload. minSdk 24 / target 34.
+- **Signing**: local PKCS12 keystore generated with Python `cryptography` (no
+  JDK/keytool on this machine) at `android/app/keystore.p12` +
+  `keystore-password.txt` — both gitignored, never committed. Their base64 +
+  password are repo **Actions secrets** (`KEYSTORE_B64`, `KEYSTORE_PASS`,
+  `KEY_ALIAS=scripture`), encrypted with the repo public key via tweetnacl
+  sealed box (npm install in /tmp). If secrets vanish, the workflow falls back
+  to a debug-signed APK (install works; future updates would need a reinstall).
+- **Workflow** `.github/workflows/build-apk.yml`: sync assets → decode keystore
+  → `gradle assembleRelease` (Gradle 8.9 via setup-gradle, Temurin 17, AGP 8.5.2)
+  → rename → refresh the `android-latest` pre-release (delete+recreate via API,
+  APK attached) → upload artifact too. Verified: run succeeded first try;
+  APK downloaded and inspected (dex + manifest + all 26 data files + 10 icon
+  PNGs under AGP-short res names; v2 signature, no v1 — fine for minSdk 24).
+- **Icons**: `tools/make-android-icons.py` (same lamp pixel map) → legacy
+  mipmap PNGs (48–192) + adaptive foreground (108–432, 58% safe zone), ink
+  background via colors.xml.
+- **Install on a phone**: open the android-latest release link in the phone
+  browser → tap ScriptureLaunchpad.apk → allow "install from this source" when
+  prompted → open Scripture Launchpad. Not app-store distribution; sideload only.
+- The PWA (Session 13) and the APK are two shells around the same web app;
+  content changes only need a push — both workflows rebuild automatically.
+
 ### 2026-09-14 — Session 13: installable phone app (PWA) + GitHub Actions deploy
 - **The Scripture Launchpad is now a real phone app**: open
   https://canar8ue.github.io/SBLearn/ on a phone → install / add-to-home-screen →
@@ -565,6 +602,11 @@ ISCore1/                                    # repo root
     │   ├── build-sw.js                     # Dev: regenerates sw.js with content-hash cache version
     │   └── make-icons.py                   # Dev: regenerates icons/ from the lamp pixel map
     ├── text-src/                           # LOCAL ONLY (gitignored): Gospel Library text JSONs (© IRI)
+    ├── android/                            # Session 14: Android WebView shell → APK (built by CI)
+    │   ├── app/build.gradle                # signing from Actions secrets (KEYSTORE_*), minSdk 24
+    │   ├── app/src/main/assets/            # site copied in by CI at build time (gitignored)
+    │   ├── app/keystore.p12 + keystore-password.txt  # LOCAL ONLY (gitignored): signing key
+    │   └── …                               # manifest, MainActivity.java, res/ (lamp icons)
     └── data/                               # Plain-JS data (script tags; file:// works)
         ├── canon.js                        # OT/NT/D&C/PGP book skeletons
         ├── glossary.js                     # 81 gospel terms
