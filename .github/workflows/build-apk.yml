@@ -1,0 +1,104 @@
+name: Build Android APK (Scripture Launchpad)
+
+# Packages scripture-launchpad into an installable Android APK: the site is
+# copied into a WebView shell (android/) and built with Gradle. Signed with
+# the repo's Actions secrets (KEYSTORE_B64 / KEYSTORE_PASS / KEY_ALIAS) so
+# every build updates the previously installed app; falls back to a
+# debug-signed APK if the secrets are absent. The APK is attached to a
+# moving "android-latest" pre-release for one-tap phone downloads.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripture-launchpad/**"
+      - ".github/workflows/build-apk.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: "apk"
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Sync site assets into the WebView shell
+        run: |
+          mkdir -p app/src/main/assets
+          cp ../index.html ../styles.css ../app.js app/src/main/assets/
+          cp -r ../data app/src/main/assets/data
+        working-directory: scripture-launchpad/android
+
+      - name: Restore signing key from Actions secrets
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            printf '%s' "$KEYSTORE_B64" | base64 -d > app/keystore.p12
+            echo "release build will be signed with the repo key"
+          else
+            echo "no signing secret present — producing a debug-signed APK"
+          fi
+        working-directory: scripture-launchpad/android
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+
+      - name: Build APK
+        run: gradle assembleRelease --no-daemon
+        working-directory: scripture-launchpad/android
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+          KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+
+      - name: Collect the APK
+        run: |
+          mkdir -p out
+          SRC=$(ls app/build/outputs/apk/release/*.apk app/build/outputs/apk/debug/*.apk 2>/dev/null | head -1)
+          test -n "$SRC"
+          cp "$SRC" out/ScriptureLaunchpad.apk
+          ls -la out/
+        working-directory: scripture-launchpad/android
+
+      - name: Refresh the android-latest pre-release
+        env:
+          TOKEN: ${{ github.token }}
+          API: https://api.github.com/repos/${{ github.repository }}
+        run: |
+          # drop the old release + tag so the new one targets the fresh commit
+          REL_ID=$(curl -s -H "Authorization: Bearer $TOKEN" "$API/releases/tags/android-latest" \
+            | python3 -c "import sys,json;print(json.load(sys.stdin).get('id',''))")
+          if [ -n "$REL_ID" ]; then
+            curl -s -X DELETE -H "Authorization: Bearer $TOKEN" "$API/releases/$REL_ID"
+            sleep 2
+          fi
+          curl -s -X DELETE -H "Authorization: Bearer $TOKEN" "$API/git/refs/tags/android-latest" || true
+          curl -s -X POST -H "Authorization: Bearer $TOKEN" "$API/releases" \
+            -d '{"tag_name":"android-latest","target_commitish":"main","name":"Scripture Launchpad — Android (latest)","prerelease":true,"body":"Install on your phone: download ScriptureLaunchpad.apk, open it, and allow installs from your browser when prompted. Rebuilt automatically on every push that touches scripture-launchpad/. Same signing key every build, so updates install over the previous version."}' \
+            > rel.json
+          UPLOAD_URL=$(python3 -c "import json;print(json.load(open('rel.json'))['upload_url'].split('{')[0])")
+          curl -s -X POST -H "Authorization: Bearer $TOKEN" \
+            -H "Content-Type: application/vnd.android.package-archive" \
+            --data-binary @out/ScriptureLaunchpad.apk \
+            "$UPLOAD_URL?name=ScriptureLaunchpad.apk" > up.json
+          python3 -c "import json;d=json.load(open('up.json'));print('asset url:',d.get('browser_download_url') or d)"
+        working-directory: scripture-launchpad/android
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ScriptureLaunchpad-apk
+          path: scripture-launchpad/android/out/ScriptureLaunchpad.apk
+          retention-days: 30
