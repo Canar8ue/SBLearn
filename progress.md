@@ -479,10 +479,14 @@ is ever accidentally committed, remove it from history AND rotate the key.
   with © IRI line; zero mobile horizontal overflow; screenshots vision-checked desktop +
   mobile. Testing gotcha: the IAB served a cached app.js after edits — worked around with a
   no-store static server on a fresh origin (scratch tooling, not committed).
-- **Publishing**: committed and pushed to main (`scripture-launchpad/**` changed →
-  deploy-pages.yml regenerates sw.js and redeploys GitHub Pages automatically, so the PWA
-  precache picks up the 14 new data files). jarin.dev copy NOT yet synced this session —
-  sync remains one `scp` + rebuild behind main (see Session 12 steps).
+- **Publishing**: committed and pushed to main (`3e65e99`; `scripture-launchpad/**` changed →
+  deploy-pages.yml regenerates sw.js and redeploys GitHub Pages automatically — verified live:
+  `data/dc-01-foundations.js` 200 on canar8ue.github.io). **jarin.dev synced the same day**:
+  runtime files copied into `../Jarin.dev/static/projects/scripture-launchpad/`, committed
+  there as `ffe2bae` (repo's other in-flight edits left uncommitted per precedent), scp'd
+  (scripture folder only) to the GCloud server, `docker compose up -d --build`; verified
+  live: index 200 with all 14 new script tags, `data/dc-01-foundations.js` 200, homepage
+  card intact.
 
 ### 2026-09-14 — Session 13: installable phone app (PWA) + GitHub Actions deploy
 - **The Scripture Launchpad is now a real phone app**: open
@@ -545,8 +549,8 @@ is ever accidentally committed, remove it from history AND rotate the key.
 ### Next up (waiting on team input)
 - **Scripture Launchpad**: author OT + NT study guides (1,189 chapters — the last two
   skeleton volumes; same subagent-wave + strict-verify pipeline as Session 15, OT needs
-  text dump split by book ranges). Then re-sync jarin.dev (its copy still lacks D&C/PGP
-  guides, the data-driven volume chips, and the router fix).
+  text dump split by book ranges). All five hosting targets are in sync as of Session 15
+  (GitHub Pages + PWA + APK rebuild on push; jarin.dev synced manually).
 - Replace placeholder interview questions with researched real ones (edit the
   `interview` array inside each career in `CAREERS`).
 - Verify salary numbers against real sources before demo day.
