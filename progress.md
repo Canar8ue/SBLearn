@@ -435,6 +435,55 @@ is ever accidentally committed, remove it from history AND rotate the key.
 - The PWA (Session 13) and the APK are two shells around the same web app;
   content changes only need a push — both workflows rebuild automatically.
 
+### 2026-09-22 — Session 15: Doctrine & Covenants + Pearl of Great Price fully guided
+- **The D&C (138 sections + both Official Declarations) and the entire Pearl of Great Price
+  (Moses, Abraham, JS—Matthew, JS—History, Articles of Faith) now have complete study guides
+  + 3-question quizzes** — 156 new units, 468 new questions. Site total: 395 authored
+  chapters, 1,185 quiz questions. Only OT (929) and NT (260) remain skeleton volumes.
+- **Authoring pipeline**: 13 subagents in 3 waves of ≤5 (rule 10 held), each grounded in the
+  actual 2013-edition text — agents dumped their sections' verses from `data/text-*.js` to a
+  scratch file, read them in full, then wrote in the established BoM house style
+  (100–170-word summary, one-line context with dates only where standard history is sure,
+  2–3 key verses quoted verbatim, takeaway, 3 quiz Qs with recall/comprehension/principle
+  spread and balanced answer indices).
+- **New data-file pattern (attach-to-canon)**: canon skeletons must stay (chapterCount, unit,
+  blurb), so dc/pgp part files don't push new book entries like the bom files do — they
+  `find` the canon book and `_bk.chapters.push(...)` (with a hard throw if canon.js didn't
+  load first; alphabetical file order guarantees it in both browser and node checks). Zero
+  changes needed to the app merge or check.js. Files: `data/dc-01…10-*.js`, `data/pgp-01…04-*.js`,
+  all wired as script tags in index.html (after bom-10, before app.js).
+- **Independent strict verification (found what the agents' self-checks missed)**: a one-off
+  script re-checked every new key verse against the text chunks at the ref's exact verse
+  position (verbatim or opening-portion only) + length limits + duplicate-question scan.
+  8 findings, all fixed by hand: 3 mid-verse quotes (D&C 7:3, 20:37, 57:3 — now true
+  opening portions), 1 punctuation typo in a quote (12:3), 1 wrong verse ref (D&C 101:36 →
+  101:38), D&C 13:1's two half-quotes merged into one full-verse entry, and the generic
+  "To whom was this revelation addressed?" quiz question de-duplicated across sections
+  54/112/126 (reworded to be section-specific). Final: 445 key verses position-verified,
+  0 problems in validate.js + check.js + the strict pass. Spot-reads of D&C 76, 121, OD 2,
+  Abraham 3 confirmed accuracy and voice. (Note: JS—History's bundled text doesn't narrate
+  the lost-116-pages story, so its guide correctly omits it — it's covered in D&C 3/10.)
+- **UI made data-driven (was hardcoded BoM-only since Session 11)**: new `volGuided(vid)`
+  helper; the volumes-page chips, volume-page stamp, and the volumes microline now derive
+  from the data instead of `v.id==="bom"` — BoM/D&C/PGP show GUIDES LIVE + GUIDES COMPLETE,
+  OT/NT stay TRACKER. Home "routine" cards and the skeleton chapter card copy updated to
+  name all three guided volumes.
+- **Router fix**: `#/chapter/<bid>` without a chapter segment hit the lost page (Session 12
+  made only the read route's segment optional). Now optional for chapter too (same
+  `parseInt||1` fallback), so `#/chapter/od-1` works — relevant now that the ODs are guided.
+  Label collapse already handled ("OFFICIAL DECLARATION 1", no doubled number).
+- **Browser-tested (desktop 1280 + mobile 390×844)**: volumes chips/stamps/microline; D&C
+  volume page (GUIDES COMPLETE, 3/3 books chipped); D&C 76 guide renders (summary, context,
+  key verses, takeaway); **real-click quiz flow 3/3 → FLAWLESS stamp → chapter auto-marked
+  READ → +20 XP → pill updated**; OD-1/OD-2/A-of-F/JS-H chapter pages; read view D&C 121
+  with © IRI line; zero mobile horizontal overflow; screenshots vision-checked desktop +
+  mobile. Testing gotcha: the IAB served a cached app.js after edits — worked around with a
+  no-store static server on a fresh origin (scratch tooling, not committed).
+- **Publishing**: committed and pushed to main (`scripture-launchpad/**` changed →
+  deploy-pages.yml regenerates sw.js and redeploys GitHub Pages automatically, so the PWA
+  precache picks up the 14 new data files). jarin.dev copy NOT yet synced this session —
+  sync remains one `scp` + rebuild behind main (see Session 12 steps).
+
 ### 2026-09-14 — Session 13: installable phone app (PWA) + GitHub Actions deploy
 - **The Scripture Launchpad is now a real phone app**: open
   https://canar8ue.github.io/SBLearn/ on a phone → install / add-to-home-screen →
@@ -494,6 +543,10 @@ is ever accidentally committed, remove it from history AND rotate the key.
   31 verses render with the © IRI attribution line.
 
 ### Next up (waiting on team input)
+- **Scripture Launchpad**: author OT + NT study guides (1,189 chapters — the last two
+  skeleton volumes; same subagent-wave + strict-verify pipeline as Session 15, OT needs
+  text dump split by book ranges). Then re-sync jarin.dev (its copy still lacks D&C/PGP
+  guides, the data-driven volume chips, and the router fix).
 - Replace placeholder interview questions with researched real ones (edit the
   `interview` array inside each career in `CAREERS`).
 - Verify salary numbers against real sources before demo day.
@@ -612,7 +665,9 @@ ISCore1/                                    # repo root
         ├── glossary.js                     # 81 gospel terms
         ├── text-manifest.js                # Volume → text-chunk file map (generated, tiny)
         ├── text-*.js                       # Full scripture text chunks — lazy-loaded per volume (generated)
-        └── bom-01…10-*.js                  # Book of Mormon: all 239 chapters authored
+        ├── bom-01…10-*.js                  # Book of Mormon: all 239 chapters authored
+        ├── dc-01…10-*.js                   # D&C: all 138 sections + OD 1-2 authored (attach-to-canon, Session 15)
+        └── pgp-01…04-*.js                  # Pearl of Great Price: all 16 units authored (attach-to-canon, Session 15)
 ```
 
 The scripture app's public home is **https://canar8ue.github.io/SBLearn/**

@@ -63,6 +63,7 @@ function chapterOf(book, n){
 }
 const booksOf = vid => BOOKS.filter(b=>b.volume===vid);
 const TOTAL_UNITS = BOOKS.reduce((s,b)=>s+unitCount(b),0);
+const volGuided = vid => booksOf(vid).every(b => (b.chapters||[]).length >= unitCount(b));
 function readCountIn(vid){
   let n=0; booksOf(vid).forEach(b=>{ const r=S.read[b.id]; if(r) n+=r.length; });
   return n;
@@ -739,8 +740,8 @@ function viewHome(){
   const hasProgress = readCount() > 0;
   const li = levelInfo();
   const stages = [
-    { t:"Pick a volume", d:"Five standard works, one library. The Book of Mormon ships with full chapter-by-chapter guides first.", m:"VOLUMES /// OT · NT · BOM · D&C · PGP" },
-    { t:"Read the guide", d:"A short original summary, who wrote it and when, key verses, and one takeaway — read it beside the actual text.", m:"GUIDES /// BOM LIVE NOW" },
+    { t:"Pick a volume", d:"Five standard works, one library. The Book of Mormon, Doctrine & Covenants, and Pearl of Great Price ship with full chapter-by-chapter guides.", m:"VOLUMES /// OT · NT · BOM · D&C · PGP" },
+    { t:"Read the guide", d:"A short original summary, who wrote it and when, key verses, and one takeaway — read it beside the actual text.", m:"GUIDES /// BOM · D&C · PGP LIVE NOW" },
     { t:"Take the 3-question quiz", d:"Easy comprehension questions, scored on the spot. Finishing marks the chapter read and pays XP, clips, and streak days.", m:"QUIZ /// 3 QUESTIONS · AUTO-GRADED" }
   ];
   const stageState = hasProgress ? ["done","done","now"] : ["now","",""];
@@ -799,7 +800,7 @@ function viewVolumes(){
     return '<a class="card hard vcard" href="#/volume/'+v.id+'" data-nav style="--acc:'+v.acc+';--acc-t:'+v.tint+'">'
       +'<span class="bar"></span><span class="inner">'
       +'<span class="toprow"><span class="ic">'+icon(v.icon,19)+'</span>'
-      +'<span class="guidechip'+(v.id==="bom"?"":" soon")+'">'+(v.id==="bom"?"GUIDES LIVE":"TRACKER")+'</span></span>'
+      +'<span class="guidechip'+(volGuided(v.id)?"":" soon")+'">'+(volGuided(v.id)?"GUIDES LIVE":"TRACKER")+'</span></span>'
       +'<h3>'+esc(v.name)+'</h3><span class="blurb">'+esc(v.blurb)+'</span>'
       +'<span class="pbar"><span style="width:'+pct+'%"></span></span>'
       +'<span class="meta"><span>'+fmt(read)+' / '+fmt(units)+' '+ (v.id==="dc"?"SECTIONS":"CHAPTERS")+'</span><span class="go">'+icon("arrow",15)+'</span></span>'
@@ -809,7 +810,7 @@ function viewVolumes(){
     '<div class="wrap"><section class="section" style="padding-top:26px">'
     +'<div class="section-head"><h2>The standard works</h2><span class="rule"></span><span class="count">5 VOLUMES · '+fmt(TOTAL_UNITS)+' UNITS</span></div>'
     +'<div class="volgrid">'+cards+'</div>'
-    +'<p class="mono" style="font:500 10.5px var(--font-mono);color:#9aa0a6;letter-spacing:.12em;margin-top:26px">STUDY GUIDES ROLL OUT VOLUME BY VOLUME /// THE BOOK OF MORMON IS FULLY GUIDED IN V1 /// EVERY VOLUME TRACKS READING NOW</p>'
+    +'<p class="mono" style="font:500 10.5px var(--font-mono);color:#9aa0a6;letter-spacing:.12em;margin-top:26px">STUDY GUIDES LIVE FOR '+VOLUMES.filter(v=>volGuided(v.id)).map(v=>esc(v.name.toUpperCase())).join(' · ')+' /// '+VOLUMES.filter(v=>!volGuided(v.id)).map(v=>esc(v.name.toUpperCase())).join(' · ')+' TRACK READING NOW</p>'
     +'</section></div>';
 }
 
@@ -825,7 +826,7 @@ function viewVolume(vid){
     +'<div class="det-head" style="--acc:'+v.acc+';--acc-t:'+v.tint+'">'
       +'<span class="big-ic">'+icon(v.icon,38)+'</span>'
       +'<div><h1>'+esc(v.name)+'</h1><p class="aka">'+bs.length+' BOOKS · '+fmt(units)+' '+(vid==="dc"?"SECTIONS":"CHAPTERS")+' · '+fmt(read)+' READ</p></div>'
-      +'<div class="head-cta"><span class="stamp gold">'+(vid==="bom"?"GUIDES COMPLETE":"TRACKER ONLY")+'</span></div>'
+      +'<div class="head-cta"><span class="stamp gold">'+(volGuided(vid)?"GUIDES COMPLETE":"TRACKER ONLY")+'</span></div>'
     +'</div>'
     +'<div class="group-head"><span class="gname">BOOKS</span><span class="grule"></span><span class="gn">'+bs.length+'</span></div>'
     +'<div class="bookgrid">'
@@ -904,7 +905,7 @@ function viewChapter(bid, n){
     guideBlock =
       '<div class="card comingsoon">'
       +'<span class="cs-k">/// STUDY GUIDE IN PROGRESS</span>'
-      +'<p>This volume ships with reading-tracker support first; original chapter guides roll out volume by volume. The Book of Mormon is fully guided.</p>'
+      +'<p>This volume ships with reading-tracker support first; original chapter guides roll out volume by volume. The Book of Mormon, Doctrine &amp; Covenants, and Pearl of Great Price are fully guided.</p>'
       +'<p>Read the full chapter right here, then mark it read.</p>'
       +'<a class="btn btn-primary btn-sm" href="#/read/'+bid+'/'+n+'" data-nav>Read the full chapter '+icon("arrow",15)+'</a>'
       +'</div>';
@@ -1156,7 +1157,7 @@ function route(){
   else if (p[0]==="volumes") viewVolumes();
   else if (p[0]==="volume" && p[1]) viewVolume(p[1]);
   else if (p[0]==="book" && p[1]) viewBook(p[1]);
-  else if (p[0]==="chapter" && p[1] && p[2]) viewChapter(p[1], Math.max(1, parseInt(p[2],10)||1));
+  else if (p[0]==="chapter" && p[1]) viewChapter(p[1], Math.max(1, parseInt(p[2],10)||1));
   else if (p[0]==="read" && p[1]) viewRead(p[1], Math.max(1, parseInt(p[2],10)||1));
   else if (p[0]==="about") viewAbout();
   else notFound();
