@@ -547,6 +547,50 @@ is ever accidentally committed, remove it from history AND rotate the key.
 - **Next for Book Launchpad (waiting on team review of Tier 1)**: Tiers 2-5 from the approved book
   list (same wave pipeline — dumps regenerate via build-text.js), then PWA + APK + deploy targets.
 
+### 2026-09-22 — Session 16: OT + NT fully guided — ALL FIVE SCRIPTURE VOLUMES COMPLETE
+- **The Old Testament (929 chapters) and New Testament (260) now have complete study guides +
+  3-question quizzes** — 1,189 new units, 3,567 new questions, in 44 new data files
+  (`data/ot-01…35-*.js`, `data/nt-01…09-*.js`, all attach-to-canon like dc/pgp). Site total:
+  **1,584 authored chapters (every canon unit), 4,752 quiz questions.** The Scripture
+  Launchpad's content build is DONE.
+- **Authoring pipeline (scaled from Session 15)**: 44 subagent batches in waves, never more
+  than 5 concurrent (rule 10). Each agent read its books' full KJV text from a pre-generated
+  dump (`text-src/dumps/*.txt`, built with the new `tools/dump-text.js book [start-end] …`),
+  wrote one part file, then self-verified with the new **`tools/verify-guides.js`** until 0
+  problems. verify-guides checks each key verse's ref against the actual text chunk at the
+  exact verse position, enforces full-verse-or-opening-portion quotes (mid-verse starts
+  rejected), summary/context/takeaway limits, quiz shape, 4-choice uniqueness, answer-index
+  balance (~25% each), and duplicate question stems (same-book exact dupes; `--all` for
+  cross-book). Agents' quote mismatches vs the stored text (dump/canon punctuation drift,
+  e.g. Josh 2:11, Num 3:39) were caught and fixed by this loop.
+- **Independent full-corpus pass after all 44 landed**: `verify-guides --all` → 1,189 chapters,
+  3,547 key verses position-checked, 0 problems; validate.js (authored 1,584, problems 0) +
+  check.js (quiz 4,752; near-uniform answer distribution) + a chapterCount coverage check (all
+  OT/NT books fully populated and sequential). Spot-reads (Gen 1, Ps 23, Ps 61, Isa 53, John 17,
+  Acts 2) confirmed accuracy and voice. One acceptable cross-book dupe (Micaiah's vision in both
+  1 Kgs 22 and 2 Chr 18 — same event, different books).
+- **UI updates**: volumes-page microline now handles the all-guided state ("STUDY GUIDES LIVE
+  FOR ALL FIVE VOLUMES /// EVERY CHAPTER GUIDED" — previously it would have rendered a dangling
+  "/// TRACK READING NOW"); home "routine" cards now say every book ships with a guide
+  ("GUIDES /// ALL FIVE VOLUMES LIVE"). volGuided() needed no change — chips/stamps (GUIDES
+  COMPLETE on all five volume pages) derive from data automatically.
+- **Wiring**: 44 script tags added to index.html (after text-manifest — any order works as long
+  as canon.js loads first); sw.js regenerated locally (92 precache entries); app.js syntax ok.
+- **Browser-tested (desktop 1280 + mobile 390×844)**: home microline "5 VOLUMES /// 1,584
+  CHAPTERS"; all five volume cards GUIDES LIVE; OT volume GUIDES COMPLETE; **real-click quiz
+  flow on Genesis 1: 3/3 → FLAWLESS → chapter auto-marked READ → +XP → pill updated** (IAB
+  click layer died mid-test — known failure mode — clicks driven via evaluate; accessible-name
+  quirk: quiz buttons have no space between number and label); read view Genesis 1 lazy-loaded
+  31 verses with © IRI line; gospel-term annotation works in OT text; zero horizontal overflow
+  on volumes/volume/chapter/read/Malachi-4 mobile views; screenshots vision-checked.
+- **Publishing**: committed `f54babb` and pushed to main → both workflows green (Deploy
+  Scripture Launchpad (Pages) ✅, Build Android APK ✅ — android-latest release refreshed);
+  verified live on canar8ue.github.io (data/ot-01 200). **jarin.dev synced same day**: runtime
+  files + sw.js/manifest/icons copied (first time the PWA files ship there — installed-app mode
+  now works on jarin.dev too), committed `5845b9a` in ../Jarin.dev (other in-flight edits left
+  uncommitted per precedent), scp'd (scripture folder only) + `docker compose up -d --build`;
+  verified live: index 200 with all 44 new script tags, ot-01 200, sw.js 200, homepage card OK.
+
 ### 2026-09-14 — Session 13: installable phone app (PWA) + GitHub Actions deploy
 - **The Scripture Launchpad is now a real phone app**: open
   https://canar8ue.github.io/SBLearn/ on a phone → install / add-to-home-screen →
@@ -606,10 +650,13 @@ is ever accidentally committed, remove it from history AND rotate the key.
   31 verses render with the © IRI attribution line.
 
 ### Next up (waiting on team input)
-- **Scripture Launchpad**: author OT + NT study guides (1,189 chapters — the last two
-  skeleton volumes; same subagent-wave + strict-verify pipeline as Session 15, OT needs
-  text dump split by book ranges). All five hosting targets are in sync as of Session 15
-  (GitHub Pages + PWA + APK rebuild on push; jarin.dev synced manually).
+- **Scripture Launchpad: content build complete as of Session 16** — all 1,584 canon units
+  guided across the five standard works; all five hosting targets in sync (GitHub Pages + PWA +
+  APK rebuild on push; jarin.dev synced manually). Remaining work is quality polish only:
+  ongoing spot-reads of the AI-drafted OT/NT guides, glossary additions if the team wants more
+  gospel terms, and any copy fixes found during review.
+- **Book Launchpad** (parallel project, `book-launchpad/`): Tier 2-5 + deploy targets per its
+  own log — not on jarin.dev or Pages yet.
 - Replace placeholder interview questions with researched real ones (edit the
   `interview` array inside each career in `CAREERS`).
 - Verify salary numbers against real sources before demo day.
@@ -716,8 +763,10 @@ ISCore1/                                    # repo root
     ├── tools/
     │   ├── build-text.js                   # Dev: text-src/*.json → data/text-*.js (node tools/build-text.js)
     │   ├── build-sw.js                     # Dev: regenerates sw.js with content-hash cache version
+    │   ├── dump-text.js                    # Dev: book/chapter-range text dumps for guide authoring (Session 16)
+    │   ├── verify-guides.js                # Dev: strict guide QA — key verses vs text, lengths, dupes (Session 16)
     │   └── make-icons.py                   # Dev: regenerates icons/ from the lamp pixel map
-    ├── text-src/                           # LOCAL ONLY (gitignored): Gospel Library text JSONs (© IRI)
+    ├── text-src/                           # LOCAL ONLY (gitignored): Gospel Library text JSONs (© IRI) + dumps/
     ├── android/                            # Session 14: Android WebView shell → APK (built by CI)
     │   ├── app/build.gradle                # signing from Actions secrets (KEYSTORE_*), minSdk 24
     │   ├── app/src/main/assets/            # site copied in by CI at build time (gitignored)
@@ -729,6 +778,8 @@ ISCore1/                                    # repo root
         ├── text-manifest.js                # Volume → text-chunk file map (generated, tiny)
         ├── text-*.js                       # Full scripture text chunks — lazy-loaded per volume (generated)
         ├── bom-01…10-*.js                  # Book of Mormon: all 239 chapters authored
+        ├── ot-01…35-*.js                   # Old Testament: all 929 chapters authored (attach-to-canon, Session 16)
+        ├── nt-01…09-*.js                   # New Testament: all 260 chapters authored (attach-to-canon, Session 16)
         ├── dc-01…10-*.js                   # D&C: all 138 sections + OD 1-2 authored (attach-to-canon, Session 15)
         └── pgp-01…04-*.js                  # Pearl of Great Price: all 16 units authored (attach-to-canon, Session 15)
 ```
