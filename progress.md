@@ -488,6 +488,33 @@ is ever accidentally committed, remove it from history AND rotate the key.
   live: index 200 with all 14 new script tags, `data/dc-01-foundations.js` 200, homepage
   card intact.
 
+### 2026-09-23 — Session 17: Book Launchpad published on jarin.dev + SB Learn hub
+- **Published**: Book Launchpad runtime files (index.html, styles.css, app.js, data/*.js — no
+  tools/text-src) copied into `../Jarin.dev/static/projects/book-launchpad/`; live at
+  https://jarin.dev/BookLaunchpad/ (verified: 12 books, 220 units, data chunks 200, Meditations 1
+  guide renders with glossary underlines).
+- **SB Learn hub built** (`../Jarin.dev/static/projects/sblearn/`): "LAUNCHPAD" landing page in the
+  launchpad visual family that demos all three launchpads and links to them; stats sourced by
+  counting data files this session — scripture 1,584 units / 4,752 quizzes (90 books, all five
+  works), book 220 units / 660 quizzes, career 8 tracks; hub totals 1,804 units, 5,412 quiz
+  questions. Live at https://jarin.dev/SBLearn/.
+- **Homepage reordered** (`../Jarin.dev/data/projects.json`, card NO. order): 1 Mesa Collective,
+  2 Shop Bird, 3 North Current, 4 LAUNCHPAD (→ /SBLearn/, thumbnail `static/images/launchpad.svg`),
+  then the rest in their prior order (M&C, Bread, New Bread, Medline, Jesus game, Christ
+  Chronology). The standalone Scripture + IS Career Launchpad cards were consolidated into the
+  LAUNCHPAD card (both sites still hosted and linked from the hub) — easy to re-add as cards if
+  wanted.
+- **Profile updated** from `../Shelf/Resume/output/Jarin_Canar_Resume_ATS.txt`: DCSysTech web
+  design/SEO lead (Aug 2026–present) first, M&C end date corrected to Aug 2026, Knight Motor
+  intern→SM split, GPAs (BYU 3.68, UVU 3.93), bilingual EN/ES, BYU Calendar project, phone.
+- **Deployed** to the GCloud server and verified live (homepage order, /SBLearn/, /BookLaunchpad/,
+  /profile, scripture/career/game all 200; `/api/grade` untouched). Gotcha logged in the Jarin.dev
+  repo: Git Bash `scp -r` with directory args silently no-ops — deploy used
+  `tar -cf - … | ssh … tar -xf -` + `docker compose up -d --build`.
+- Committed `5917b7c` in `../Jarin.dev` (this session's files only: projects.json, templates,
+  style.css, images, book-launchpad/, sblearn/ — career-session backend edits + jesus-christ-game
+  folder left uncommitted per precedent). ISCore1 commit below touches progress.md only.
+
 ### 2026-09-22 — Session 16: Book Launchpad (3rd site) — Tier 1 complete
 - **New product, new folder**: `book-launchpad/` — a reading platform for public-domain books with the
   same UI system and learning model as the Scripture Launchpad (unit study guide + 3-question quiz +
