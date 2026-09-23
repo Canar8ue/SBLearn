@@ -740,8 +740,8 @@ function viewHome(){
   const hasProgress = readCount() > 0;
   const li = levelInfo();
   const stages = [
-    { t:"Pick a volume", d:"Five standard works, one library. The Book of Mormon, Doctrine & Covenants, and Pearl of Great Price ship with full chapter-by-chapter guides.", m:"VOLUMES /// OT · NT · BOM · D&C · PGP" },
-    { t:"Read the guide", d:"A short original summary, who wrote it and when, key verses, and one takeaway — read it beside the actual text.", m:"GUIDES /// BOM · D&C · PGP LIVE NOW" },
+    { t:"Pick a volume", d:"Five standard works, one library. Every book of scripture ships with a full chapter-by-chapter study guide.", m:"VOLUMES /// OT · NT · BOM · D&C · PGP" },
+    { t:"Read the guide", d:"A short original summary, who wrote it and when, key verses, and one takeaway — read it beside the actual text.", m:"GUIDES /// ALL FIVE VOLUMES LIVE" },
     { t:"Take the 3-question quiz", d:"Easy comprehension questions, scored on the spot. Finishing marks the chapter read and pays XP, clips, and streak days.", m:"QUIZ /// 3 QUESTIONS · AUTO-GRADED" }
   ];
   const stageState = hasProgress ? ["done","done","now"] : ["now","",""];
@@ -806,11 +806,16 @@ function viewVolumes(){
       +'<span class="meta"><span>'+fmt(read)+' / '+fmt(units)+' '+ (v.id==="dc"?"SECTIONS":"CHAPTERS")+'</span><span class="go">'+icon("arrow",15)+'</span></span>'
       +'</span></a>';
   }).join("");
+  const guided = VOLUMES.filter(v=>volGuided(v.id)).map(v=>esc(v.name.toUpperCase()));
+  const tracking = VOLUMES.filter(v=>!volGuided(v.id)).map(v=>esc(v.name.toUpperCase()));
+  const guideLine = tracking.length
+    ? 'STUDY GUIDES LIVE FOR '+guided.join(' · ')+' /// '+tracking.join(' · ')+' TRACK READING NOW'
+    : 'STUDY GUIDES LIVE FOR ALL FIVE VOLUMES /// EVERY CHAPTER GUIDED';
   view.innerHTML =
     '<div class="wrap"><section class="section" style="padding-top:26px">'
     +'<div class="section-head"><h2>The standard works</h2><span class="rule"></span><span class="count">5 VOLUMES · '+fmt(TOTAL_UNITS)+' UNITS</span></div>'
     +'<div class="volgrid">'+cards+'</div>'
-    +'<p class="mono" style="font:500 10.5px var(--font-mono);color:#9aa0a6;letter-spacing:.12em;margin-top:26px">STUDY GUIDES LIVE FOR '+VOLUMES.filter(v=>volGuided(v.id)).map(v=>esc(v.name.toUpperCase())).join(' · ')+' /// '+VOLUMES.filter(v=>!volGuided(v.id)).map(v=>esc(v.name.toUpperCase())).join(' · ')+' TRACK READING NOW</p>'
+    +'<p class="mono" style="font:500 10.5px var(--font-mono);color:#9aa0a6;letter-spacing:.12em;margin-top:26px">'+guideLine+'</p>'
     +'</section></div>';
 }
 
