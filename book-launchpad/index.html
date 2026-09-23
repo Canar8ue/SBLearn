@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Book Launchpad — read the classics, guided</title>
+<meta name="description" content="Unit-by-unit study guides, quick three-question quizzes, and the full text of twelve public-domain classics — from Marcus Aurelius and Sun Tzu to Gibran's The Prophet. Read every chapter right here.">
+<meta name="theme-color" content="#202124">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><rect x="3" y="1" width="2" height="2" fill="%23202124"/><rect x="11" y="1" width="2" height="2" fill="%23202124"/><rect x="4" y="3" width="8" height="1" fill="%23202124"/><rect x="3" y="4" width="10" height="7" fill="%23202124"/><rect x="4" y="5" width="3" height="3" fill="white"/><rect x="9" y="5" width="3" height="3" fill="white"/><rect x="7" y="7" width="2" height="2" fill="%23e8710a"/></svg>'>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="appbar">
+  <div class="wrap row">
+    <a class="brand" href="#/" data-nav>
+      <span class="mark" aria-hidden="true">
+        <svg viewBox="0 0 16 16" shape-rendering="crispEdges">
+          <rect x="3" y="1" width="2" height="2" fill="currentColor"/><rect x="11" y="1" width="2" height="2" fill="currentColor"/>
+          <rect x="4" y="3" width="8" height="1" fill="currentColor"/><rect x="3" y="4" width="10" height="2" fill="currentColor"/>
+          <rect x="3" y="6" width="10" height="5" fill="currentColor"/>
+          <rect x="4" y="11" width="8" height="1" fill="currentColor"/>
+          <rect x="4" y="5" width="3" height="3" fill="var(--card, #fff)"/><rect x="9" y="5" width="3" height="3" fill="var(--card, #fff)"/>
+          <rect x="7" y="7" width="2" height="2" fill="#e8710a"/>
+        </svg>
+      </span>
+      <span class="word">Book<em>Launchpad</em></span>
+      <span id="oxmount"></span>
+    </a>
+    <nav class="appnav" id="appnav">
+      <a href="#/" data-nav data-navkey="home">Home</a>
+      <a href="#/volumes" data-nav data-navkey="volumes">Library</a>
+      <a href="#/about" data-nav data-navkey="about">About</a>
+    </nav>
+    <span class="spacer"></span>
+    <button class="pill" id="pill" type="button" title="Progress &amp; study shop">
+      <span class="pl-lv">LV 1</span>
+      <span class="pl-bar"><span class="pl-fill" id="pillfill"></span></span>
+      <span class="pl-clips"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg><b id="pillclips">0</b></span>
+    </button>
+  </div>
+</header>
+
+<main id="view"></main>
+
+<footer>
+  <div class="wrap foot">
+    <div class="foot-rule"></div>
+    <p class="mono f1">BOOK LAUNCHPAD /// A READING COMPANION BUILT ON PUBLIC-DOMAIN BOOKS — NOT AFFILIATED WITH ANY PUBLISHER</p>
+    <p class="mono f2">ALL TEXTS PUBLIC DOMAIN (PRE-1931 TRANSLATIONS) VIA PROJECT GUTENBERG · STUDY GUIDES DRAFTED WITH AI ASSISTANCE, TEAM-EDITED · EVERYTHING STAYS ON THIS DEVICE — ZERO NETWORK CALLS</p>
+    <p class="flinks">
+      <a href="#/about" data-nav>About &amp; sources</a>
+      <span class="dotsep">·</span>
+      <a href="#" id="resetlink">Reset demo progress</a>
+    </p>
+  </div>
+</footer>
+
+<nav class="tabbar" id="tabbar" aria-label="Mobile navigation"></nav>
+
+<!-- glossary: edge tab + drawer + tooltip + flashcards mount here -->
+<button class="bz-tab" id="bztab" type="button">TERMS <b id="bzcount">0/0</b></button>
+<aside class="bz-panel" id="bzpanel" aria-hidden="true"></aside>
+<div class="bz-tip" id="bztip" hidden></div>
+<div class="fc-overlay" id="fcoverlay" hidden></div>
+
+<div class="toasts" id="toasts"></div>
+<div class="modal-root" id="modalroot" hidden></div>
+<div class="confetti-root" id="confetti"></div>
+
+<!-- data (plain script tags so file:// double-click works).
+     canon.js first (skeletons), then guide part files (alphabetical;
+     tao-a before tao-b so chapters stay sequential), then the lazy-load
+     text manifest, then the app. -->
+<script src="data/canon.js"></script>
+<script src="data/glossary.js"></script>
+<script src="data/art-of-war.js"></script>
+<script src="data/consolation.js"></script>
+<script src="data/enchiridion.js"></script>
+<script src="data/garcia.js"></script>
+<script src="data/meditations.js"></script>
+<script src="data/prince.js"></script>
+<script src="data/science.js"></script>
+<script src="data/seneca.js"></script>
+<script src="data/tao-a.js"></script>
+<script src="data/tao-b.js"></script>
+<script src="data/thinketh.js"></script>
+<script src="data/24h.js"></script>
+<script src="data/prophet.js"></script>
+<script src="data/text-manifest.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

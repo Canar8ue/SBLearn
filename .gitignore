@@ -10,6 +10,9 @@ career-launchpad/ai-key.js
 # Scripture text sources (© IRI — keep local; regenerate data/text-*.js via tools/build-text.js)
 scripture-launchpad/text-src/
 
+# Book Launchpad raw Gutenberg downloads + generated dumps (regenerate via tools/build-text.js)
+book-launchpad/text-src/
+
 # OS junk
 Thumbs.db
 .DS_Store

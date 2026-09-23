@@ -488,6 +488,65 @@ is ever accidentally committed, remove it from history AND rotate the key.
   live: index 200 with all 14 new script tags, `data/dc-01-foundations.js` 200, homepage
   card intact.
 
+### 2026-09-22 — Session 16: Book Launchpad (3rd site) — Tier 1 complete
+- **New product, new folder**: `book-launchpad/` — a reading platform for public-domain books with the
+  same UI system and learning model as the Scripture Launchpad (unit study guide + 3-question quiz +
+  full text on-platform, XP/streak/badges/clips/shop, orange-underlined reading-terms glossary +
+  flashcards). **The scripture app was not touched** (another session was working in it all day —
+  its uncommitted OT/NT files are still untouched in the working tree; commit below stages explicit
+  paths only).
+- **Book list (user-curated)**: philosophy/education-weighted public-domain list agreed with the team
+  first; fiction vetoed. *The Richest Man in Babylon* was dropped at build time (compiled book
+  commonly dated 1930 + renewal questions = murky PD status) and replaced with The Science of Getting
+  Rich. **Rule of thumb going forward: only pre-1931 US publications AND pre-1931 English
+  translations** (Giles/Legge/Marriott/Long/James/Stewart/Higginson). Hagakure and Book of Five Rings
+  have no PD English translation at all.
+- **Tier 1 = 12 books, 3 collections**: Philosophy & Power (Meditations 12u, Enchiridion 13u, On the
+  Shortness of Life 5u, Consolation of Philosophy 5u, The Prince 26u), Eastern Wisdom (Art of War 13u,
+  Tao Teh King 81u), Self-Mastery (As a Man Thinketh 7u, Science of Getting Rich 17u, How to Live on
+  24 Hours a Day 12u, A Message to Garcia 1u, The Prophet 28u). **220 units, 660 quiz questions, 89
+  glossary terms.** Tiny works grouped (Enchiridion §1-52 → 13 four-teaching units; Seneca 20 sections
+  → 5 parts).
+- **Text pipeline**: `tools/build-text.js` converts gitignored `text-src/pg*.txt` (Project Gutenberg
+  downloads) → `data/text-<bid>.js` chunks (lazy-loaded per collection via `data/text-manifest.js`,
+  same pattern as scripture) + plain-text dumps in `text-src/dumps/` for guide authors. Every book
+  needed its own splitter (Legge's Tao has four different chapter-marker shapes; the Prophet has no
+  body headings — poems are anchored on their `_Italic_` request lines; Prince headings are
+  "CHAPTER N." alone on a line; Meditations cuts at the APPENDIX marker; Consolation body headings are
+  the LAST "BOOK N." per number). 220/220 units verified with text.
+- **Authoring**: 13 subagents in 3 waves of ≤5 (rule 10 held). Each agent read its book's dump in
+  full, wrote the guide file in the established house style (summary 90-170w, one-line context, 2-3
+  verbatim quotes with refs, one-line takeaway, 3 quiz Qs: recall/comprehension/principle), then
+  self-verified with **`tools/check-quotes.js <bid>`** (every quote whitespace-normalized-verbatim
+  against the text chunk + quiz shape + answer-spread checks) until 0 problems. Guide files follow the
+  attach-to-canon pattern (tao ships as tao-a.js + tao-b.js; the checker globs `<bid>-*.js`).
+- **Strict verification (all green)**: validate.js + check.js (canon-first load order — alphabetical
+  loading breaks attach-to-canon) + check-quotes on all 12 books + a cross-book scan: zero duplicate
+  questions across 660, no templating, answer distribution sane (rotation in renderQ scrambles display
+  order anyway), summaries 88-176 words. Hand spot-reads of prince:17, tao:8, prophet:4, enchiridion:1,
+  seneca:2 confirmed summaries/quotes/quizzes accurate to the texts.
+- **Shell re-theme (zero styles.css changes)**: VOLUMES → 3 collections (data-driven accents: blue/
+  brick/green), localStorage `blp_state_v1`, unit labels book/part/poem/essay with short codes,
+  unit titles displayed (t field → "On Love", "Laying Plans" under the unit heading and in toast
+  labels via bidLabel), guide labels "The big idea"/"Key passages", read view shows paragraphs without
+  verse numbers + per-book attribution line (author (year) /// trans. X /// public domain ///
+  Project Gutenberg link), book page header carries author/translator/year + a "Next unit" smart link
+  (firstUnread helper). Mascot: **Quill the pixel owl** (reuses .wick CSS classes); shop: Athenaeum/
+  Clothbound/First Edition accents, the Bookworm, Quill's Second Journal, Midnight, confetti. PWA/SW
+  section stripped for now (no manifest/sw.js yet — phone app comes later). One mid-session bug found
+  and fixed: an accidental edit had deleted modal HTML (caught by re-read, repaired).
+- **Browser-tested (1280 + 390 viewports)**: home hero + owl + microline "3 COLLECTIONS /// 12 BOOKS
+  /// 220 UNITS", shelf with GUIDES LIVE on all collections, guide render, real quiz flow (answers →
+  FLAWLESS → auto-read → +50 XP incl. badge → pill updates), rotation maps authored answers correctly,
+  read view (Tao 1 with attribution), glossary panel 89 terms, Midnight theme on mobile, tab bar.
+  Screenshots vision-checked. IAB input-layer decayed mid-session (known failure mode) — quiz clicks
+  driven via evaluate; do the usual 2-minute manual click-through before demoing.
+- **Not deployed yet** (no GitHub Pages workflow for book-launchpad, jarin.dev not synced — both are
+  follow-ups so the other session's in-flight scripture deploy isn't disturbed). Local preview: any
+  static server in `book-launchpad/` (e.g. `python -m http.server 8647`).
+- **Next for Book Launchpad (waiting on team review of Tier 1)**: Tiers 2-5 from the approved book
+  list (same wave pipeline — dumps regenerate via build-text.js), then PWA + APK + deploy targets.
+
 ### 2026-09-14 — Session 13: installable phone app (PWA) + GitHub Actions deploy
 - **The Scripture Launchpad is now a real phone app**: open
   https://canar8ue.github.io/SBLearn/ on a phone → install / add-to-home-screen →
